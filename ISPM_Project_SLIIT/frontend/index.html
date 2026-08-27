@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HR Iris · Login</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+      * { font-family: 'Inter', sans-serif; }
+      
+      @keyframes drift {
+        0% { transform: translate(0px, 0px) scale(1); }
+        33% { transform: translate(15px, -20px) scale(1.05); }
+        66% { transform: translate(-10px, 15px) scale(0.98); }
+        100% { transform: translate(0px, 0px) scale(1); }
+      }
+      @keyframes softGlow {
+        0% { opacity: 0.3; filter: blur(50px); }
+        50% { opacity: 0.6; filter: blur(45px); }
+        100% { opacity: 0.3; filter: blur(50px); }
+      }
+      @keyframes slideIn {
+        0% { opacity: 0; transform: translateY(12px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+      .animate-drift { animation: drift 22s ease-in-out infinite; }
+      .animate-glow { animation: softGlow 14s ease infinite; }
+      .animate-slide-in { animation: slideIn 0.6s ease-out forwards; }
+      
+      .glass-deep {
+        backdrop-filter: blur(24px) saturate(200%);
+        -webkit-backdrop-filter: blur(24px) saturate(200%);
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+      }
+      .glass-panel-light {
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+      }
+      
+      input[type=number]::-webkit-inner-spin-button, 
+      input[type=number]::-webkit-outer-spin-button { 
+        -webkit-appearance: none; 
+        margin: 0; 
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
