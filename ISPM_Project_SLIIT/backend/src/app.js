@@ -1,6 +1,7 @@
 ﻿const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const ratelimit = require('express-rate-limit');
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
@@ -31,6 +32,15 @@ const corsOptions = {
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
+
+const limiter = ratelimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 30,
+  message: 'Too many requests from this IP, please try again after 15 minutes',
+})
+
+app.use(limiter);
+
 
 // Handle preflight OPTIONS requests for all routes BEFORE any other middleware
 app.options("*", cors(corsOptions));
