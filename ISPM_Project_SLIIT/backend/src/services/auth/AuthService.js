@@ -25,6 +25,64 @@ class AuthService {
   }
 
   /**
+   * Create default developer/admin account if it does not exist
+   * @returns {Promise<void>}
+   */
+  static async createDefaultAdmin() {
+    const email = process.env.DEFAULT_ADMIN_EMAIL;
+    const password = process.env.DEFAULT_ADMIN_PASSWORD;
+
+    if (!email || !password) {
+      console.log('Default admin credentials are not configured.');
+      return;
+    }
+
+    const maxRetries = 30;
+    const retryDelay = 2000;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(
+          `Checking database for default admin account... (${attempt}/${maxRetries})`
+        );
+
+        const existingUser = await User.findByEmail(email);
+
+        if (existingUser) {
+          console.log(`Default admin account already exists: ${email}`);
+          return;
+        }
+
+        const hashedPassword = await this.hashPassword(password);
+
+        const user = await User.create({
+          name: 'Developer',
+          email,
+          password: hashedPassword
+        });
+
+        console.log(`Default developer account created: ${user.email}`);
+        return;
+
+      } catch (error) {
+        console.log(
+          `Database not ready yet. Retrying in ${retryDelay / 1000} seconds...`
+        );
+
+        if (attempt === maxRetries) {
+          console.error(
+            'Failed to create default admin account after maximum retries:',
+            error
+          );
+          return;
+        }
+
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+      }
+    }
+  }
+
+  /**
    * Register a new user
    * @param {Object} userData - {name, email, password}
    * @returns {Promise<Object>} {success: boolean, message: string, user?: Object}
