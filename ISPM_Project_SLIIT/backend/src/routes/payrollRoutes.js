@@ -8,7 +8,7 @@ router.use(authMiddleware);
 
 // Salary structures
 router.get('/salary-structures', PayrollController.getAllSalaryStructures);
-router.get('/salary-structure/:employeeId', PayrollController.getSalaryStructure);
+router.get('/salary-structure/:employeeId', authMiddleware, PayrollController.getSalaryStructure);
 router.post('/salary-structure', PayrollController.upsertSalaryStructure);
 
 // Payroll generation (must come before /:id)

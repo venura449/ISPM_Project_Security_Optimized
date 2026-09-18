@@ -373,13 +373,13 @@ const HomeContent = ({ user, setActiveTab }) => {
     const y = now.getFullYear();
 
     Promise.allSettled([
-      fetch(`${API}/api/employees`, { headers }).then((r) => r.json()),
-      fetch(`${API}/api/attendance/sheet?date=${today}`, { headers }).then(
+      fetch(`${API}/api/employees`, { headers: headers }).then((r) => r.json()),
+      fetch(`${API}/api/attendance/sheet?date=${today}`, { headers: headers }).then(
         (r) => r.json(),
       ),
-      fetch(`${API}/api/leave/pending`, { headers }).then((r) => r.json()),
-      fetch(`${API}/api/training/programs`, { headers }).then((r) => r.json()),
-      fetch(`${API}/api/payroll?month=${m}&year=${y}`, { headers }).then((r) =>
+      fetch(`${API}/api/leave/pending`, { headers: headers }).then((r) => r.json()),
+      fetch(`${API}/api/training/programs`, { headers: headers }).then((r) => r.json()),
+      fetch(`${API}/api/payroll?month=${m}&year=${y}`, { headers: headers }).then((r) =>
         r.json(),
       ),
     ]).then(([empR, attR, leaveR, trainR, payR]) => {

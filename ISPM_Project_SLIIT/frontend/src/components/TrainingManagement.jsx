@@ -25,7 +25,11 @@ const TrainingManagement = () => {
       if (filters.type) params.append("type", filters.type);
       if (filters.status) params.append("status", filters.status);
       if (filters.search) params.append("search", filters.search);
-      const response = await fetch(`${API_URL}/programs?${params}`);
+      const response = await fetch(`${API_URL}/programs?${params}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       const data = await response.json();
       if (data.success) setPrograms(data.data);
       else toast.error(data.message);
