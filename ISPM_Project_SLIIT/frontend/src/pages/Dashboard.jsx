@@ -374,14 +374,18 @@ const HomeContent = ({ user, setActiveTab }) => {
 
     Promise.allSettled([
       fetch(`${API}/api/employees`, { headers: headers }).then((r) => r.json()),
-      fetch(`${API}/api/attendance/sheet?date=${today}`, { headers: headers }).then(
-        (r) => r.json(),
-      ),
-      fetch(`${API}/api/leave/pending`, { headers: headers }).then((r) => r.json()),
-      fetch(`${API}/api/training/programs`, { headers: headers }).then((r) => r.json()),
-      fetch(`${API}/api/payroll?month=${m}&year=${y}`, { headers: headers }).then((r) =>
+      fetch(`${API}/api/attendance/sheet?date=${today}`, {
+        headers: headers,
+      }).then((r) => r.json()),
+      fetch(`${API}/api/leave/pending`, { headers: headers }).then((r) =>
         r.json(),
       ),
+      fetch(`${API}/api/training/programs`, { headers: headers }).then((r) =>
+        r.json(),
+      ),
+      fetch(`${API}/api/payroll?month=${m}&year=${y}`, {
+        headers: headers,
+      }).then((r) => r.json()),
     ]).then(([empR, attR, leaveR, trainR, payR]) => {
       const emp = empR.status === "fulfilled" ? empR.value?.data || [] : [];
       const att = attR.status === "fulfilled" ? attR.value?.data || [] : [];
@@ -702,17 +706,13 @@ export const Dashboard = () => {
 
   return (
     <div
-      className="flex h-screen w-screen overflow-hidden"
+      className="dashboard-shell flex h-screen w-screen overflow-hidden"
       style={{
-        fontFamily: "'Inter', system-ui, sans-serif",
+        fontFamily: "'Inter Variable', system-ui, sans-serif",
         background:
           "linear-gradient(135deg, #eff6ff 0%, #f8faff 50%, #eef2ff 100%)",
       }}
     >
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-      `}</style>
-
       {/* Profile Edit Modal */}
       {showProfileModal && (
         <ProfileEditModal
