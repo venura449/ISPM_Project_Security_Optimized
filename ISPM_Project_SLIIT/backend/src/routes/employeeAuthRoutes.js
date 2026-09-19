@@ -1,6 +1,6 @@
 const express = require('express');
 const EmployeeAuthController = require('../controllers/auth/EmployeeAuthController');
-const { authMiddleware } = require('../middlewares/authMiddleware');
+const { authMiddleware, requireAdminUser } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
@@ -76,6 +76,6 @@ router.post('/logout', authMiddleware, EmployeeAuthController.logout);
  * @headers {string} authorization - Bearer token
  * @body {number} employee_id - Database employee ID
  */
-router.post('/generate-password', authMiddleware, EmployeeAuthController.generatePassword);
+router.post('/generate-password', authMiddleware, requireAdminUser, EmployeeAuthController.generatePassword);
 
 module.exports = router;
