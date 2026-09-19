@@ -222,8 +222,9 @@ class AuthService {
    * @returns {string} JWT token
    */
   static generateToken(userId) {
+    const userType = "admin"
     return jwt.sign(
-      { id: userId },
+      { id: userId, type: userType },
       process.env.JWT_SECRET || 'your_jwt_secret_key_change_in_production',
       { expiresIn: process.env.JWT_EXPIRY || '7d' }
     );

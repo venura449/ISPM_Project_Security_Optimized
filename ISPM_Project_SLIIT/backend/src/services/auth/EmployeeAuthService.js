@@ -60,7 +60,10 @@ class EmployeeAuthService {
             const conn = await connection.getConnection();
             try {
                 await conn.query(
-                    'UPDATE employees SET password = ?, password_generated_at = NOW() WHERE id = ?',
+                    `UPDATE employees SET password = ?, password_generated_at = NOW(),
+                    must_change_password = 1,
+                    temporary_password_expires_at = DATE_ADD(NOW(), INTERVAL 24 HOUR),
+                    temporary_password_used_at = NULL WHERE id = ?`,
                     [hashedPassword, employeeId]
                 );
             } finally {
@@ -124,6 +127,38 @@ class EmployeeAuthService {
                     message: 'Invalid employee ID or password'
                 };
             }
+
+            // Check tempory password has changed
+            if (employee.must_change_password) {
+                if (
+                    !employee.temporary_password_expires_at ||
+                    new Date(employee.temporary_password_expires_at) < new Date()
+                ) {
+                    return {
+                    success: false,
+                    message: "Temporary password has expired. Contact an administrator."
+                    };
+                }
+
+                const connection = require('../../../config/database');
+                const conn = await connection.getConnection();
+                const [result] = await conn.query(
+                    `UPDATE employees
+                    SET temporary_password_used_at = NOW()
+                    WHERE id = ?
+                    AND must_change_password = 1
+                    AND temporary_password_used_at IS NULL`,
+                    [employee.id]
+                );
+
+                if (result.affectedRows === 0) {
+                    return {
+                    success: false,
+                    message: "Temporary password has already been used. Contact an administrator."
+                    };
+                }
+            }
+
 
             // Generate token
             const token = this.generateToken(employee.id, 'employee');
@@ -212,7 +247,10 @@ class EmployeeAuthService {
             const conn = await connection.getConnection();
             try {
                 await conn.query(
-                    'UPDATE employees SET password = ?, password_generated_at = NOW() WHERE id = ?',
+                    `UPDATE employees SET password = ?, password_generated_at = NOW(),
+                    must_change_password = 0,
+                    temporary_password_expires_at = NULL,
+                    temporary_password_used_at = NULL WHERE id = ?`,
                     [hashedPassword, employeeId]
                 );
             } finally {

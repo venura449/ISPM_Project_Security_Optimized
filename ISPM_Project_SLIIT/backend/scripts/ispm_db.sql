@@ -997,6 +997,14 @@ ALTER TABLE `training_sessions`
   ADD CONSTRAINT `training_sessions_ibfk_2` FOREIGN KEY (`facilitator_id`) REFERENCES `employees` (`id`) ON DELETE SET NULL;
 COMMIT;
 
+
+--
+-- Add password constraint
+--
+ALTER TABLE employees
+  ADD COLUMN must_change_password TINYINT(1) NOT NULL DEFAULT 0,
+  ADD COLUMN temporary_password_expires_at DATETIME NULL,
+  ADD COLUMN temporary_password_used_at DATETIME NULL;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
