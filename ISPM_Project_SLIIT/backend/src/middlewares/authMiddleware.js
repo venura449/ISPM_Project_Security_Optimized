@@ -67,7 +67,19 @@ const optionalAuthMiddleware = (req, res, next) => {
   }
 };
 
+const requireAdminUser = (req, res, next) => {
+  if (req.user?.type == "employee") {
+    return res.status(403).json({
+      success: false,
+      message: "Unathorized access"
+    });
+  }
+
+  next();
+};
+
 module.exports = {
   authMiddleware,
-  optionalAuthMiddleware
+  optionalAuthMiddleware,
+  requireAdminUser
 };
