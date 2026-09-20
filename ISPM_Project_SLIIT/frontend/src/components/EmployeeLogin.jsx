@@ -35,14 +35,14 @@ const EmployeeLogin = () => {
             employee_id: employeeId.toUpperCase(),
             password,
           }),
+          credentials: "include", // Include the HttpOnly cookie in request
         },
       );
 
       const data = await response.json();
 
       if (data.success) {
-        // Save token and user info
-        localStorage.setItem("token", data.token);
+        // Save and user info
         localStorage.setItem("userType", "employee");
         localStorage.setItem("user", JSON.stringify(data.user));
 

@@ -13,11 +13,7 @@ export const AuthProvider = ({ children }) => {
 
   // Check if token is valid on mount
   useEffect(() => {
-    if (token) {
-      verifyToken(token);
-    } else {
-      setLoading(false);
-    }
+    verifyToken(token);
   }, []);
 
   // Verify token validity
@@ -26,9 +22,9 @@ export const AuthProvider = ({ children }) => {
       const response = await fetch(`${API_URL}/verify`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${tokenToVerify}`,
           "Content-Type": "application/json",
         },
+        credentials: "include", //Include the HttpOnly cookie in request
       });
 
       const data = await response.json();
@@ -108,6 +104,7 @@ export const AuthProvider = ({ children }) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include",
       });
 
       const data = await response.json();
@@ -126,8 +123,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       setUser(data.user);
-      setToken(data.token);
-      localStorage.setItem("token", data.token);
+      
       toast.success("Welcome back! 🚀", {
         position: "top-right",
         autoClose: 2500,
@@ -147,11 +143,19 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Logout user
-  const logout = useCallback(() => {
+  const logout = useCallback(async() => {
+
+    try{
+      await fetch(`${API_URL}/logout`,{
+        method: "POST",
+        credentials: "include", //Include the HttpOnly cookie in request
+      });
+    }catch(err){
+      console.error("Logout error:", err);
+    }
+
     setUser(null);
-    setToken(null);
     setError(null);
-    localStorage.removeItem("token");
     toast.info("Logged out", {
       position: "top-right",
       autoClose: 1500,
@@ -172,7 +176,7 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     updateProfile,
-    isAuthenticated: !!user && !!token,
+    isAuthenticated: !!user,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
