@@ -3,6 +3,10 @@ import { toast } from "react-toastify";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
+import { useApi } from "../hooks/useApi";
+
+const { apiFetch } = useApi();
+
 // ── Constants ────────────────────────────────────────────────────────────────
 const MONTHS = [
   "January",
@@ -54,10 +58,8 @@ const STATUS_CFG = {
   },
 };
 
-const API = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/payroll`;
-const token = () => localStorage.getItem("token");
+const API = `/payroll`;
 const headers = () => ({
-  Authorization: `Bearer ${token()}`,
   "Content-Type": "application/json",
 });
 const fmt = (n) =>
@@ -285,7 +287,7 @@ function EditPayrollModal({ record, onClose, onSaved }) {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const res = await fetch(`${API}/${record.id}`, {
+      const res = await apiFetch(`${API}/${record.id}`, {
         method: "PUT",
         headers: headers(),
         body: JSON.stringify(form),
@@ -568,7 +570,7 @@ function EditStructureModal({ structure, employees, onClose, onSaved }) {
     }
     setSaving(true);
     try {
-      const res = await fetch(`${API}/salary-structure`, {
+      const res = await apiFetch(`${API}/salary-structure`, {
         method: "POST",
         headers: headers(),
         body: JSON.stringify(form),
@@ -757,7 +759,7 @@ function GenerateModal({ month, year, onClose, onGenerated }) {
   const handleGenerate = async () => {
     setGenerating(true);
     try {
-      const res = await fetch(`${API}/generate`, {
+      const res = await apiFetch(`${API}/generate`, {
         method: "POST",
         headers: headers(),
         body: JSON.stringify({ month, year }),
@@ -844,7 +846,7 @@ function DeleteModal({ record, onClose, onDeleted }) {
   const handleDelete = async () => {
     setDeleting(true);
     try {
-      const res = await fetch(`${API}/${record.id}`, {
+      const res = await apiFetch(`${API}/${record.id}`, {
         method: "DELETE",
         headers: headers(),
       });
@@ -945,7 +947,7 @@ export default function PayrollManagement() {
   const loadRuns = useCallback(async () => {
     setLoadingRuns(true);
     try {
-      const res = await fetch(`${API}?month=${month}&year=${year}`, {
+      const res = await apiFetch(`${API}?month=${month}&year=${year}`, {
         headers: headers(),
       });
       const data = await res.json();
@@ -964,9 +966,9 @@ export default function PayrollManagement() {
     setLoadingStructures(true);
     try {
       const [sRes, eRes] = await Promise.all([
-        fetch(`${API}/salary-structures`, { headers: headers() }),
-        fetch(
-          `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/employees`,
+        apiFetch(`${API}/salary-structures`, { headers: headers() }),
+        apiFetch(
+          `/employees`,
           { headers: headers() },
         ),
       ]);

@@ -1,6 +1,10 @@
 import { createContext, useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 
+import { useApi } from "../hooks/useApi";
+
+const { apiFetch } = useApi();
+
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -9,7 +13,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const API_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/auth`;
+  const API_URL = `/auth`;
 
   // Check if token is valid on mount
   useEffect(() => {
@@ -19,12 +23,11 @@ export const AuthProvider = ({ children }) => {
   // Verify token validity
   const verifyToken = async (tokenToVerify) => {
     try {
-      const response = await fetch(`${API_URL}/verify`, {
+      const response = await apiFetch(`${API_URL}/verify`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include", //Include the HttpOnly cookie in request
       });
 
       const data = await response.json();
@@ -52,7 +55,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_URL}/register`, {
+      const response = await apiFetch(`${API_URL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
@@ -100,11 +103,10 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_URL}/login`, {
+      const response = await apiFetch(`${API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-        credentials: "include",
       });
 
       const data = await response.json();
@@ -146,9 +148,8 @@ export const AuthProvider = ({ children }) => {
   const logout = useCallback(async() => {
 
     try{
-      await fetch(`${API_URL}/logout`,{
+      await apiFetch(`${API_URL}/logout`,{
         method: "POST",
-        credentials: "include", //Include the HttpOnly cookie in request
       });
     }catch(err){
       console.error("Logout error:", err);

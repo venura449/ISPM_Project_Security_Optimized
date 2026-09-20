@@ -17,6 +17,10 @@ import {
   CartesianGrid,
 } from "recharts";
 
+import {useApi} from "../hooks/useApi";
+
+const {apiFetch} = useApi();
+
 const MONTHS = [
   "Jan",
   "Feb",
@@ -67,8 +71,7 @@ const LEAVE_TYPE_COLORS = {
 const token = () => localStorage.getItem("token");
 
 const api = (path) =>
-  fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}${path}`, {
-    headers: { Authorization: `Bearer ${token()}` },
+  apiFetch(`/${path}`, {
   }).then((r) => r.json());
 
 const fmt = (d) =>

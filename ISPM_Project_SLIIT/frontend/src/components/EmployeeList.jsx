@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 
+import {useApi} from "../hooks/useApi";
+
+const {apiFetch} = useApi();
+
 const inputCls =
   "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 bg-white outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all placeholder-gray-400";
 
@@ -48,12 +52,11 @@ const EmployeeList = ({
   const generatePassword = async (employeeId, employeeName) => {
     setPasswordModal((prev) => ({ ...prev, loading: true }));
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/employee-auth/generate-password`,
+      const response = await apiFetch(
+        `/api/employee-auth/generate-password`,
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ employee_id: employeeId }),

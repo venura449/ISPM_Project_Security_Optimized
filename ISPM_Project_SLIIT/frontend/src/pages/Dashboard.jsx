@@ -365,27 +365,29 @@ const HomeContent = ({ user, setActiveTab }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const headers = { Authorization: `Bearer ${token}` };
     const now = new Date();
     const today = now.toISOString().split("T")[0];
     const m = now.getMonth() + 1;
     const y = now.getFullYear();
 
+    const fetchOptions = {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
     Promise.allSettled([
-      fetch(`${API}/api/employees`, { headers: headers }).then((r) => r.json()),
-      fetch(`${API}/api/attendance/sheet?date=${today}`, {
-        headers: headers,
-      }).then((r) => r.json()),
-      fetch(`${API}/api/leave/pending`, { headers: headers }).then((r) =>
+      fetch(`${API}/api/employees`, fetchOptions).then((r) => r.json()),
+      fetch(`${API}/api/attendance/sheet?date=${today}`, fetchOptions).then(
+        (r) => r.json(),
+      ),
+      fetch(`${API}/api/leave/pending`, fetchOptions).then((r) => r.json()),
+      fetch(`${API}/api/training/programs`, fetchOptions).then((r) => r.json()),
+      fetch(`${API}/api/payroll?month=${m}&year=${y}`, fetchOptions).then((r) =>
         r.json(),
       ),
-      fetch(`${API}/api/training/programs`, { headers: headers }).then((r) =>
-        r.json(),
-      ),
-      fetch(`${API}/api/payroll?month=${m}&year=${y}`, {
-        headers: headers,
-      }).then((r) => r.json()),
     ]).then(([empR, attR, leaveR, trainR, payR]) => {
       const emp = empR.status === "fulfilled" ? empR.value?.data || [] : [];
       const att = attR.status === "fulfilled" ? attR.value?.data || [] : [];

@@ -3,7 +3,10 @@ import { toast } from "react-toastify";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-// â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+import {useApi} from "../hooks/useApi";
+
+const {apiFetch} = useApi();
+
 const fmt = (d) =>
   d
     ? new Date(d).toLocaleDateString("en-US", {
@@ -436,9 +439,7 @@ const LeaveManagement = () => {
   const loadMyRequests = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/my-requests`, {
-        headers: { Authorization: `Bearer ${token()}` },
-      });
+      const res = await apiFetch(`/my-requests`);
       const data = await res.json();
       if (data.success) setLeaveRequests(data.data || []);
     } catch {
@@ -451,9 +452,7 @@ const LeaveManagement = () => {
   const loadPending = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/pending`, {
-        headers: { Authorization: `Bearer ${token()}` },
-      });
+      const res = await apiFetch(`/pending`);
       const data = await res.json();
       if (data.success) setPendingRequests(data.data || []);
     } catch {
@@ -465,9 +464,7 @@ const LeaveManagement = () => {
 
   const loadBalance = async () => {
     try {
-      const res = await fetch(`${API}/balance/1`, {
-        headers: { Authorization: `Bearer ${token()}` },
-      });
+      const res = await apiFetch(`/balance/1`);
       const data = await res.json();
       if (data.success) setLeaveBalance(data.data || []);
     } catch {
@@ -478,10 +475,9 @@ const LeaveManagement = () => {
   const handleSubmitRequest = async (formData) => {
     setSubmitting(true);
     try {
-      const res = await fetch(`${API}/request`, {
+      const res = await apiFetch(`/request`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token()}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
@@ -504,10 +500,9 @@ const LeaveManagement = () => {
 
   const handleApprove = async (id) => {
     try {
-      const res = await fetch(`${API}/request/${id}/approve`, {
+      const res = await apiFetch(`/request/${id}/approve`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token()}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ notes: "Approved" }),
@@ -524,10 +519,9 @@ const LeaveManagement = () => {
 
   const handleReject = async (id) => {
     try {
-      const res = await fetch(`${API}/request/${id}/reject`, {
+      const res = await apiFetch(`/request/${id}/reject`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token()}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ notes: "Rejected" }),
@@ -544,9 +538,8 @@ const LeaveManagement = () => {
 
   const confirmDelete = async () => {
     try {
-      const res = await fetch(`${API}/request/${deleteModal.id}`, {
+      const res = await apiFetch(`/request/${deleteModal.id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token()}` },
       });
       const data = await res.json();
       if (data.success) {

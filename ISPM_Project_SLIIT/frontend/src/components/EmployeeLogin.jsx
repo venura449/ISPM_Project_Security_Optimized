@@ -2,6 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
+import {useApi} from "../hooks/useApi";
+
+const {apiFetch} = useApi();
+
 const EmployeeLogin = () => {
   const [employeeId, setEmployeeId] = useState("");
   const [password, setPassword] = useState("");
@@ -24,8 +28,8 @@ const EmployeeLogin = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/employee-auth/login`,
+      const response = await apiFetch(
+        `/api/employee-auth/login`,
         {
           method: "POST",
           headers: {

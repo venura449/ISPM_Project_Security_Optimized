@@ -3,6 +3,10 @@ import { toast } from "react-toastify";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+import { useApi } from "../hooks/useApi";
+
+const { apiFetch } = useApi();
+
 const inputCls =
   "w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 bg-white outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all placeholder-gray-400 disabled:opacity-50 disabled:bg-gray-50";
 const selectCls =
@@ -33,8 +37,8 @@ const CreateTrainingForm = ({ onSubmit, onCancel }) => {
   });
 
   useEffect(() => {
-    fetch(
-      `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/employees`,
+    apiFetch(
+      `/api/employees`,
     )
       .then((r) => r.json())
       .then((d) => {

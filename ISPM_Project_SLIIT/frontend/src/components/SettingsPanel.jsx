@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
+import { useApi } from "../hooks/useApi";
+
+const { apiFetch } = useApi();
+
 const LEAVE_KEYS = [
   { key: "leave_annual_days", label: "Annual Leave", desc: "Days / year" },
   { key: "leave_sick_days", label: "Sick Leave", desc: "Days / year" },
@@ -123,12 +127,7 @@ const SettingsPanel = () => {
   const loadSettings = async () => {
     setLoading(true);
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/settings`,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        },
-      );
+      const res = await apiFetch(`/api/settings`);
       const data = await res.json();
       if (data.success) {
         const map = {};
@@ -153,17 +152,13 @@ const SettingsPanel = () => {
         key,
         value,
       }));
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/settings`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ settings }),
+      const res = await apiFetch(`/api/settings`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({ settings }),
+      });
       const data = await res.json();
       if (data.success) {
         const map = {};

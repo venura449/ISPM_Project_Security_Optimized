@@ -3,6 +3,10 @@ import { toast } from "react-toastify";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
+import { useApi } from "../hooks/useApi";
+
+const { apiFetch } = useApi();
+
 const Icon = ({ d, className = "w-5 h-5" }) => (
   <svg
     className={className}
@@ -88,12 +92,7 @@ const DailyAttendance = () => {
   const loadAttendanceSheet = async () => {
     setLoading(true);
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/attendance/sheet?date=${selectedDate}`,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        },
-      );
+      const res = await apiFetch(`/api/attendance/sheet?date=${selectedDate}`);
       const data = await res.json();
       if (data.success) {
         setAttendanceData(data.data || []);
@@ -118,12 +117,7 @@ const DailyAttendance = () => {
       return;
     }
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/attendance/search?query=${encodeURIComponent(q)}&date=${selectedDate}`,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        },
-      );
+      const res = await apiFetch(`/attendance/search?query=${encodeURIComponent(q)}&date=${selectedDate}`);
       const data = await res.json();
       if (data.success) setSearchResults(data.data || []);
     } catch {
@@ -134,14 +128,10 @@ const DailyAttendance = () => {
   const markAttendance = async (employeeId, status) => {
     setSaving((prev) => ({ ...prev, [employeeId]: true }));
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/attendance/mark`,
+      const res = await apiFetch(
+        `/api/attendance/mark`,
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify({
             employee_id: employeeId,
             date: selectedDate,
