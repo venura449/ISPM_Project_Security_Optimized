@@ -3,11 +3,11 @@ import { toast } from "react-toastify";
 
 import { useApi } from "../hooks/useApi";
 
-const { apiFetch } = useApi();
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const { apiFetch } = useApi();
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);

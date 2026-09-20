@@ -5,9 +5,8 @@ import autoTable from "jspdf-autotable";
 
 import {useApi} from "../hooks/useApi";
 
-const {apiFetch} = useApi();
-
 const AttendanceReport = () => {
+  const {apiFetch} = useApi();
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
   const [reportData, setReportData] = useState([]);

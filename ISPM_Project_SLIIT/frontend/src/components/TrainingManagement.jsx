@@ -6,9 +6,9 @@ import TrainingDetails from "./TrainingDetails";
 
 import { useApi } from "../hooks/useApi";
 
-const { apiFetch } = useApi();
 
 const TrainingManagement = () => {
+  const { apiFetch } = useApi();
   const [programs, setPrograms] = useState([]);
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);

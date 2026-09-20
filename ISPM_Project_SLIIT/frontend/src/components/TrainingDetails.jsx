@@ -5,10 +5,9 @@ import autoTable from "jspdf-autotable";
 
 import { useApi } from "../hooks/useApi";
 
-const { apiFetch } = useApi();
 
 const inputCls =
-  "w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 bg-white outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all placeholder-gray-400";
+"w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 bg-white outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all placeholder-gray-400";
 const selectCls =
   "w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 bg-white outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all";
 const labelCls = "block text-xs font-medium text-gray-500 mb-1";
@@ -28,6 +27,7 @@ const completionBadge = {
 };
 
 const TrainingDetails = ({ program, onUpdate, onClose, onProgramsChange }) => {
+  const { apiFetch } = useApi();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [details, setDetails] = useState(program);

@@ -4,9 +4,9 @@ import { toast } from "react-toastify";
 
 import {useApi} from "../hooks/useApi";
 
-const {apiFetch} = useApi();
 
 const EmployeeLogin = () => {
+  const {apiFetch} = useApi();
   const [employeeId, setEmployeeId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);

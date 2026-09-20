@@ -19,7 +19,6 @@ import {
 
 import {useApi} from "../hooks/useApi";
 
-const {apiFetch} = useApi();
 
 const MONTHS = [
   "Jan",
@@ -68,8 +67,6 @@ const LEAVE_TYPE_COLORS = {
   Unpaid: "bg-gray-100 text-gray-600",
 };
 
-const token = () => localStorage.getItem("token");
-
 const api = (path) =>
   apiFetch(`/${path}`, {
   }).then((r) => r.json());
@@ -77,17 +74,17 @@ const api = (path) =>
 const fmt = (d) =>
   d
     ? new Date(d).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      })
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    })
     : "—";
-
-// ── Donut centre label ────────────────────────────────────────────────────────
-const DonutLabel = ({ viewBox, value, label }) => {
-  const { cx, cy } = viewBox;
-  return (
-    <g>
+    
+    // ── Donut centre label ────────────────────────────────────────────────────────
+    const DonutLabel = ({ viewBox, value, label }) => {
+      const { cx, cy } = viewBox;
+      return (
+        <g>
       <text
         x={cx}
         y={cy - 6}
@@ -122,6 +119,7 @@ const StatCard = ({ label, value, bg, text, border }) => (
 );
 
 export default function EmployeeReport() {
+  const {apiFetch} = useApi();
   const now = new Date();
   const [employees, setEmployees] = useState([]);
   const [search, setSearch] = useState("");

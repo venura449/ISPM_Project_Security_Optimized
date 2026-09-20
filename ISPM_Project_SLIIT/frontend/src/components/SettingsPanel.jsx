@@ -3,7 +3,6 @@ import { toast } from "react-toastify";
 
 import { useApi } from "../hooks/useApi";
 
-const { apiFetch } = useApi();
 
 const LEAVE_KEYS = [
   { key: "leave_annual_days", label: "Annual Leave", desc: "Days / year" },
@@ -35,17 +34,17 @@ const ATTENDANCE_KEYS = [
 // ── Icons ─────────────────────────────────────────────────────────────────────
 const CalendarIcon = () => (
   <svg
-    className="w-5 h-5"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-    strokeWidth={1.8}
+  className="w-5 h-5"
+  fill="none"
+  viewBox="0 0 24 24"
+  stroke="currentColor"
+  strokeWidth={1.8}
   >
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
       d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-    />
+      />
   </svg>
 );
 
@@ -56,28 +55,28 @@ const ClockIcon = () => (
     viewBox="0 0 24 24"
     stroke="currentColor"
     strokeWidth={1.8}
-  >
+    >
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
       d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-    />
+      />
   </svg>
 );
 
 const InfoIcon = () => (
   <svg
-    className="w-4 h-4"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
+  className="w-4 h-4"
+  fill="none"
+  viewBox="0 0 24 24"
+  stroke="currentColor"
     strokeWidth={2}
   >
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
       d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-    />
+      />
   </svg>
 );
 
@@ -99,10 +98,10 @@ const SettingRow = ({ setting, values, original, handleChange }) => {
           className={`w-24 text-center rounded-xl px-3 py-2 text-sm font-semibold border outline-none transition-all
             ${
               changed
-                ? "bg-blue-50 border-blue-300 text-blue-700 focus:ring-2 focus:ring-blue-100"
-                : "bg-white border-gray-200 text-gray-700 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              ? "bg-blue-50 border-blue-300 text-blue-700 focus:ring-2 focus:ring-blue-100"
+              : "bg-white border-gray-200 text-gray-700 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             }`}
-        />
+            />
         {changed && (
           <span
             className="w-2 h-2 rounded-full bg-blue-500 shrink-0"
@@ -115,11 +114,12 @@ const SettingRow = ({ setting, values, original, handleChange }) => {
 };
 
 const SettingsPanel = () => {
+  const { apiFetch } = useApi();
   const [values, setValues] = useState({});
   const [original, setOriginal] = useState({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
+  
   useEffect(() => {
     loadSettings();
   }, []);

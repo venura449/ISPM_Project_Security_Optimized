@@ -5,18 +5,17 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import {useApi} from "../hooks/useApi";
 
-const {apiFetch} = useApi();
 
 const fmt = (d) =>
   d
-    ? new Date(d).toLocaleDateString("en-US", {
+? new Date(d).toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
         year: "numeric",
       })
-    : "-";
+      : "-";
 
-const STATUS_CFG = {
+      const STATUS_CFG = {
   Pending: {
     bg: "bg-amber-100",
     text: "text-amber-700",
@@ -65,7 +64,7 @@ const FIELD = ({ label, children }) => (
 );
 
 const inputCls =
-  "w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all";
+"w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all";
 
 const ValidationIcon = ({ valid }) =>
   valid ? (
@@ -106,6 +105,7 @@ const getInputCls = (touched, valid) => {
 
 // â”€â”€ New Request Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const NewRequestModal = ({ onSubmit, onCancel, loading }) => {
+  const {apiFetch} = useApi();
   const [form, setForm] = useState({
     leave_type: "Annual",
     start_date: "",

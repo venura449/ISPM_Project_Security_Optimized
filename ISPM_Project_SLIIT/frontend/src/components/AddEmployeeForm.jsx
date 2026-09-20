@@ -5,8 +5,6 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import { useApi } from "../hooks/useApi";
 
-const {apiFetch} = useApi();
-
 const labelCls = "block text-xs font-medium text-gray-500 mb-1";
 
 const STEPS = ["Basic Info", "Employment", "Dates & Pay"];
@@ -74,6 +72,7 @@ const STEP_FIELDS = {
 };
 
 const AddEmployeeForm = ({ onSubmit, onCancel }) => {
+  const {apiFetch} = useApi();
   const [loading, setLoading] = useState(false);
   const [idLoading, setIdLoading] = useState(true);
   const [currentStep, setCurrentStep] = useState(1);

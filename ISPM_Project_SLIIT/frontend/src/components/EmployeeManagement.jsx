@@ -6,9 +6,9 @@ import EmployeeProfile from "./EmployeeProfile";
 
 import {useApi} from "../hooks/useApi";
 
-const {apiFetch} = useApi();
 
 const EmployeeManagement = () => {
+  const {apiFetch} = useApi();
   const [showAddModal, setShowAddModal] = useState(false);
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);

@@ -3,9 +3,9 @@ import { toast } from "react-toastify";
 
 import { useApi } from "../hooks/useApi";
 
-const { apiFetch } = useApi();
 
 const ProfileEditModal = ({ user, onClose, onUpdate }) => {
+  const { apiFetch } = useApi();
   const [loading, setLoading] = useState(false);
   const [nameError, setNameError] = useState("");
   const [phoneError, setPhoneError] = useState("");

@@ -3,9 +3,9 @@ import { toast } from "react-toastify";
 
 import {useApi} from "../hooks/useApi";
 
-const {apiFetch} = useApi();
 
 const AttendanceSheet = () => {
+  const {apiFetch} = useApi();
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0],
   );

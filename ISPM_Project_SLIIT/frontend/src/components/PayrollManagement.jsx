@@ -5,7 +5,6 @@ import autoTable from "jspdf-autotable";
 
 import { useApi } from "../hooks/useApi";
 
-const { apiFetch } = useApi();
 
 // ── Constants ────────────────────────────────────────────────────────────────
 const MONTHS = [
@@ -78,7 +77,7 @@ const Field = ({ label, children }) => (
 
 const Input = ({ value, onChange, type = "number", ...rest }) => (
   <input
-    type={type}
+  type={type}
     value={value}
     onChange={onChange}
     {...rest}
@@ -90,7 +89,7 @@ const Input = ({ value, onChange, type = "number", ...rest }) => (
 function generateSlipPDF(rec) {
   const doc = new jsPDF();
   const pageW = doc.internal.pageSize.width;
-
+  
   // Header
   doc.setFillColor(37, 99, 235);
   doc.rect(0, 0, pageW, 42, "F");
@@ -132,7 +131,7 @@ function generateSlipPDF(rec) {
   doc.setFontSize(11);
   doc.setFont("helvetica", "bold");
   doc.text("Earnings", 14, 94);
-
+  
   autoTable(doc, {
     head: [["Component", "Amount (LKR)"]],
     body: [
@@ -198,7 +197,7 @@ function generateSlipPDF(rec) {
   doc.text(`LKR ${fmt(rec.net_salary)}`, pageW - 20, afterDed + 13, {
     align: "right",
   });
-
+  
   // EPF / ETF employer contributions note
   const noteY = afterDed + 38;
   doc.setTextColor(100, 116, 139);
@@ -235,7 +234,7 @@ function generateSlipPDF(rec) {
       { align: "center" },
     );
   }
-
+  
   doc.save(
     `Salary_Slip_${rec.emp_code}_${MONTHS_SHORT[rec.pay_period_month - 1]}${rec.pay_period_year}.pdf`,
   );
@@ -243,6 +242,7 @@ function generateSlipPDF(rec) {
 
 // ── Edit Payroll Modal ────────────────────────────────────────────────────────
 function EditPayrollModal({ record, onClose, onSaved }) {
+  const { apiFetch } = useApi();
   const [form, setForm] = useState({
     basic_salary: record.basic_salary || 0,
     housing_allowance: record.housing_allowance || 0,
@@ -250,12 +250,12 @@ function EditPayrollModal({ record, onClose, onSaved }) {
     medical_allowance: record.medical_allowance || 0,
     other_allowances: record.other_allowances || 0,
     epf_employee_pct:
-      record.epf_employee > 0 && record.basic_salary > 0
+    record.epf_employee > 0 && record.basic_salary > 0
         ? ((record.epf_employee / record.basic_salary) * 100).toFixed(2)
         : 8,
-    epf_employer_pct:
+        epf_employer_pct:
       record.epf_employer > 0 && record.basic_salary > 0
-        ? ((record.epf_employer / record.basic_salary) * 100).toFixed(2)
+      ? ((record.epf_employer / record.basic_salary) * 100).toFixed(2)
         : 12,
     etf_pct:
       record.etf > 0 && record.basic_salary > 0
@@ -283,7 +283,7 @@ function EditPayrollModal({ record, onClose, onSaved }) {
   const net = gross - total_ded;
 
   const set = (k) => (e) => setForm((p) => ({ ...p, [k]: e.target.value }));
-
+  
   const handleSave = async () => {
     setSaving(true);
     try {
