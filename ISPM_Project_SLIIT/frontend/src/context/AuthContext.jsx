@@ -1,49 +1,39 @@
 import { createContext, useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
-
 import { useApi } from "../hooks/useApi";
-
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const { apiFetch } = useApi();
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const API_URL = `/auth`;
+  const API_URL = `/auth`; 
 
-  // Check if token is valid on mount
+  // Check if session is valid on mount
   useEffect(() => {
-    verifyToken(token);
+    verifySession();
   }, []);
 
-  // Verify token validity
-  const verifyToken = async (tokenToVerify) => {
+  // Verify session validity via HttpOnly cookie
+  const verifySession = async () => {
     try {
+      // apiFetch automatically includes credentials: "include"
       const response = await apiFetch(`${API_URL}/verify`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
       });
 
       const data = await response.json();
 
       if (data.success) {
         setUser(data.user);
-        setToken(tokenToVerify);
       } else {
-        localStorage.removeItem("token");
-        setToken(null);
         setUser(null);
       }
     } catch (err) {
-      console.error("Token verification error:", err);
-      localStorage.removeItem("token");
-      setToken(null);
+      console.error("Session verification error:", err);
       setUser(null);
     } finally {
       setLoading(false);
@@ -57,7 +47,6 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await apiFetch(`${API_URL}/register`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
       });
 
@@ -65,38 +54,23 @@ export const AuthProvider = ({ children }) => {
 
       if (!data.success) {
         setError(data.message);
-        toast.error(data.message, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+        toast.error(data.message, { position: "top-right", autoClose: 3000 });
         return { success: false, message: data.message };
       }
 
-      // Don't auto-login after registration, user must login separately
       toast.success(
         "Account created successfully! 🎉 Please sign in with your credentials.",
-        {
-          position: "top-right",
-          autoClose: 2500,
-        },
+        { position: "top-right", autoClose: 2500 }
       );
       return { success: true, message: data.message };
     } catch (err) {
-      const errorMsg = err.message;
-      setError(errorMsg);
-      toast.error("Connection error: " + errorMsg, {
-        position: "top-right",
-        autoClose: 3000,
-      });
-      return { success: false, message: errorMsg };
+      setError(err.message);
+      toast.error("Connection error: " + err.message, { position: "top-right", autoClose: 3000 });
+      return { success: false, message: err.message };
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [apiFetch]);
 
   // Login user
   const login = useCallback(async (email, password) => {
@@ -105,7 +79,6 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await apiFetch(`${API_URL}/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
@@ -113,55 +86,36 @@ export const AuthProvider = ({ children }) => {
 
       if (!data.success) {
         setError(data.message);
-        toast.error(data.message, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+        toast.error(data.message, { position: "top-right", autoClose: 3000 });
         return { success: false, message: data.message };
       }
 
       setUser(data.user);
-      
-      toast.success("Welcome back! 🚀", {
-        position: "top-right",
-        autoClose: 2500,
-      });
+      toast.success("Welcome back! 🚀", { position: "top-right", autoClose: 2500 });
       return { success: true, message: data.message };
     } catch (err) {
-      const errorMsg = err.message;
-      setError(errorMsg);
-      toast.error("Connection error: " + errorMsg, {
-        position: "top-right",
-        autoClose: 3000,
-      });
-      return { success: false, message: errorMsg };
+      setError(err.message);
+      toast.error("Connection error: " + err.message, { position: "top-right", autoClose: 3000 });
+      return { success: false, message: err.message };
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [apiFetch]);
 
   // Logout user
-  const logout = useCallback(async() => {
-
-    try{
-      await apiFetch(`${API_URL}/logout`,{
+  const logout = useCallback(async () => {
+    try {
+      await apiFetch(`${API_URL}/logout`, {
         method: "POST",
       });
-    }catch(err){
+    } catch (err) {
       console.error("Logout error:", err);
     }
 
     setUser(null);
     setError(null);
-    toast.info("Logged out", {
-      position: "top-right",
-      autoClose: 1500,
-    });
-  }, []);
+    toast.info("Logged out", { position: "top-right", autoClose: 1500 });
+  }, [apiFetch]);
 
   // Update user profile
   const updateProfile = useCallback((updatedUser) => {
@@ -170,7 +124,6 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
-    token,
     loading,
     error,
     register,

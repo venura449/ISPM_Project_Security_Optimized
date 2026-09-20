@@ -10,6 +10,8 @@ import SettingsPanel from "../components/SettingsPanel";
 import EmployeeReport from "../components/EmployeeReport";
 import PayrollManagement from "../components/PayrollManagement";
 
+import { useApi } from "../hooks/useApi";
+
 // ── Icons ────────────────────────────────────────────────────────────────────
 const Icon = ({ d, className = "w-5 h-5" }) => (
   <svg
@@ -360,6 +362,7 @@ const QuickAction = ({ label, iconD, color, onClick }) => {
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const HomeContent = ({ user, setActiveTab }) => {
+  const {apiFetch} = useApi();
   const [stats, setStats] = useState(null);
   const [pendingLeaves, setPendingLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -379,15 +382,11 @@ const HomeContent = ({ user, setActiveTab }) => {
     };
 
     Promise.allSettled([
-      fetch(`${API}/api/employees`, fetchOptions).then((r) => r.json()),
-      fetch(`${API}/api/attendance/sheet?date=${today}`, fetchOptions).then(
-        (r) => r.json(),
-      ),
-      fetch(`${API}/api/leave/pending`, fetchOptions).then((r) => r.json()),
-      fetch(`${API}/api/training/programs`, fetchOptions).then((r) => r.json()),
-      fetch(`${API}/api/payroll?month=${m}&year=${y}`, fetchOptions).then((r) =>
-        r.json(),
-      ),
+      apiFetch(`/api/employees`).then((r) => r.json()),
+      apiFetch(`/api/attendance/sheet?date=${today}`).then((r) => r.json()),
+      apiFetch(`/api/leave/pending`).then((r) => r.json()),
+      apiFetch(`/api/training/programs`).then((r) => r.json()),
+      apiFetch(`/api/payroll?month=${m}&year=${y}`).then((r) => r.json()),
     ]).then(([empR, attR, leaveR, trainR, payR]) => {
       const emp = empR.status === "fulfilled" ? empR.value?.data || [] : [];
       const att = attR.status === "fulfilled" ? attR.value?.data || [] : [];
@@ -419,7 +418,7 @@ const HomeContent = ({ user, setActiveTab }) => {
       setPendingLeaves(leave.slice(0, 6));
       setLoading(false);
     });
-  }, []);
+  }, [apiFetch]);
 
   const fmtCurrency = (n) =>
     new Intl.NumberFormat("en-LK", {
