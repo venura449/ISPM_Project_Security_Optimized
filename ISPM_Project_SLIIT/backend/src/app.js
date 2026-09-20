@@ -1,6 +1,7 @@
 ﻿const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const cookieParser = require('cookie-parser');
 const ratelimit = require('express-rate-limit');
 
 // Import routes
@@ -47,6 +48,7 @@ app.options("*", cors(corsOptions));
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes

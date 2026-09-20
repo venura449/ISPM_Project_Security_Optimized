@@ -1,5 +1,5 @@
-const AuthService = require('../../services/auth/AuthService');
-const User = require('../../models/auth/User');
+const AuthService = require("../../services/auth/AuthService");
+const User = require("../../models/auth/User");
 
 class AuthController {
   /**
@@ -13,7 +13,7 @@ class AuthController {
       const result = await AuthService.register({
         name,
         email,
-        password
+        password,
       });
 
       if (!result.success) {
@@ -22,11 +22,11 @@ class AuthController {
 
       res.status(201).json(result);
     } catch (error) {
-      console.error('Register controller error:', error);
+      console.error("Register controller error:", error);
       res.status(500).json({
         success: false,
-        message: 'Registration failed',
-        error: error.message
+        message: "Registration failed",
+        error: error.message,
       });
     }
   }
@@ -45,13 +45,22 @@ class AuthController {
         return res.status(401).json(result);
       }
 
-      res.status(200).json(result);
+      const { token, ...responseData } = result;
+
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+
+      res.status(200).json(responseData);
     } catch (error) {
-      console.error('Login controller error:', error);
+      console.error("Login controller error:", error);
       res.status(500).json({
         success: false,
-        message: 'Login failed',
-        error: error.message
+        message: "Login failed",
+        error: error.message,
       });
     }
   }
@@ -70,21 +79,21 @@ class AuthController {
       if (!user) {
         return res.status(404).json({
           success: false,
-          message: 'User not found'
+          message: "User not found",
         });
       }
 
       res.status(200).json({
         success: true,
-        message: 'Profile retrieved successfully',
-        user
+        message: "Profile retrieved successfully",
+        user,
       });
     } catch (error) {
-      console.error('Get profile controller error:', error);
+      console.error("Get profile controller error:", error);
       res.status(500).json({
         success: false,
-        message: 'Failed to retrieve profile',
-        error: error.message
+        message: "Failed to retrieve profile",
+        error: error.message,
       });
     }
   }
@@ -103,7 +112,7 @@ class AuthController {
         name,
         phone,
         address,
-        profile_picture
+        profile_picture,
       });
 
       if (!result.success) {
@@ -112,11 +121,11 @@ class AuthController {
 
       res.status(200).json(result);
     } catch (error) {
-      console.error('Update profile controller error:', error);
+      console.error("Update profile controller error:", error);
       res.status(500).json({
         success: false,
-        message: 'Failed to update profile',
-        error: error.message
+        message: "Failed to update profile",
+        error: error.message,
       });
     }
   }
@@ -134,7 +143,7 @@ class AuthController {
       const result = await AuthService.changePassword(
         userId,
         oldPassword,
-        newPassword
+        newPassword,
       );
 
       if (!result.success) {
@@ -143,11 +152,11 @@ class AuthController {
 
       res.status(200).json(result);
     } catch (error) {
-      console.error('Change password controller error:', error);
+      console.error("Change password controller error:", error);
       res.status(500).json({
         success: false,
-        message: 'Failed to change password',
-        error: error.message
+        message: "Failed to change password",
+        error: error.message,
       });
     }
   }
@@ -158,12 +167,12 @@ class AuthController {
    */
   static async verifyToken(req, res) {
     try {
-      const token = req.headers.authorization?.split(' ')[1];
+      const token = req.headers.authorization?.split(" ")[1];
 
       if (!token) {
         return res.status(400).json({
           success: false,
-          message: 'Token is required'
+          message: "Token is required",
         });
       }
 
@@ -172,7 +181,7 @@ class AuthController {
       if (!decoded) {
         return res.status(401).json({
           success: false,
-          message: 'Invalid or expired token'
+          message: "Invalid or expired token",
         });
       }
 
@@ -180,15 +189,15 @@ class AuthController {
 
       res.status(200).json({
         success: true,
-        message: 'Token is valid',
-        user
+        message: "Token is valid",
+        user,
       });
     } catch (error) {
-      console.error('Verify token controller error:', error);
+      console.error("Verify token controller error:", error);
       res.status(500).json({
         success: false,
-        message: 'Token verification failed',
-        error: error.message
+        message: "Token verification failed",
+        error: error.message,
       });
     }
   }
@@ -203,14 +212,14 @@ class AuthController {
       // In a real app, you might add token to a blacklist
       res.status(200).json({
         success: true,
-        message: 'Logout successful'
+        message: "Logout successful",
       });
     } catch (error) {
-      console.error('Logout controller error:', error);
+      console.error("Logout controller error:", error);
       res.status(500).json({
         success: false,
-        message: 'Logout failed',
-        error: error.message
+        message: "Logout failed",
+        error: error.message,
       });
     }
   }
