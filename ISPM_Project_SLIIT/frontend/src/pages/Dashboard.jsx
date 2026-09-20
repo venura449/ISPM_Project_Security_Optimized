@@ -359,7 +359,6 @@ const QuickAction = ({ label, iconD, color, onClick }) => {
   );
 };
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const HomeContent = ({ user, setActiveTab }) => {
   const {apiFetch} = useApi();
@@ -382,11 +381,11 @@ const HomeContent = ({ user, setActiveTab }) => {
     };
 
     Promise.allSettled([
-      apiFetch(`/api/employees`).then((r) => r.json()),
-      apiFetch(`/api/attendance/sheet?date=${today}`).then((r) => r.json()),
-      apiFetch(`/api/leave/pending`).then((r) => r.json()),
-      apiFetch(`/api/training/programs`).then((r) => r.json()),
-      apiFetch(`/api/payroll?month=${m}&year=${y}`).then((r) => r.json()),
+      apiFetch(`/employees`).then((r) => r.json()),
+      apiFetch(`/attendance/sheet?date=${today}`).then((r) => r.json()),
+      apiFetch(`/leave/pending`).then((r) => r.json()),
+      apiFetch(`/training/programs`).then((r) => r.json()),
+      apiFetch(`/payroll?month=${m}&year=${y}`).then((r) => r.json()),
     ]).then(([empR, attR, leaveR, trainR, payR]) => {
       const emp = empR.status === "fulfilled" ? empR.value?.data || [] : [];
       const att = attR.status === "fulfilled" ? attR.value?.data || [] : [];
