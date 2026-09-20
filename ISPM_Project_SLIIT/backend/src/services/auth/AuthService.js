@@ -31,6 +31,7 @@ class AuthService {
   static async createDefaultAdmin() {
     const email = process.env.DEFAULT_ADMIN_EMAIL;
     const password = process.env.DEFAULT_ADMIN_PASSWORD;
+    const role = process.env.DEFAULT_ADMIN_ROLE;
 
     if (!email || !password) {
       console.log('Default admin credentials are not configured.');
@@ -58,7 +59,8 @@ class AuthService {
         const user = await User.create({
           name: 'Developer',
           email,
-          password: hashedPassword
+          password: hashedPassword,
+          role 
         });
 
         console.log(`Default developer account created: ${user.email}`);
@@ -192,7 +194,7 @@ class AuthService {
       }
 
       // Generate token
-      const token = this.generateToken(user.id);
+      const token = await this.generateToken(user.id);
 
       return {
         success: true,
@@ -221,9 +223,11 @@ class AuthService {
    * @param {number} userId - User ID
    * @returns {string} JWT token
    */
-  static generateToken(userId) {
+  static async generateToken(userId) {
+    const user = await User.findById(userId);
+    const userType = user.role;
     return jwt.sign(
-      { id: userId },
+      { id: userId, type: userType },
       process.env.JWT_SECRET || 'your_jwt_secret_key_change_in_production',
       { expiresIn: process.env.JWT_EXPIRY || '7d' }
     );

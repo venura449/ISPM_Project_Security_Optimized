@@ -68,7 +68,7 @@ const optionalAuthMiddleware = (req, res, next) => {
 };
 
 const requireAdminUser = (req, res, next) => {
-  if (req.user?.type == "employee") {
+  if (req.user?.type != "admin" ) {
     return res.status(403).json({
       success: false,
       message: "Unathorized access"
