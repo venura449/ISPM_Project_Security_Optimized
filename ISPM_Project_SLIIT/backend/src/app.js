@@ -1,24 +1,27 @@
-﻿const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
-const cookieParser = require('cookie-parser');
-const ratelimit = require('express-rate-limit');
+﻿const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
+const cookieParser = require("cookie-parser");
+const ratelimit = require("express-rate-limit");
 
 // Import routes
-const authRoutes = require('./routes/authRoutes');
-const employeeAuthRoutes = require('./routes/employeeAuthRoutes');
-const employeeRoutes = require('./routes/employeeRoutes');
-const trainingRoutes = require('./routes/trainingRoutes');
-const attendanceRoutes = require('./routes/attendanceRoutes');
-const leaveRoutes = require('./routes/leaveRoutes');
-const settingsRoutes = require('./routes/settingsRoutes');
-const payrollRoutes = require('./routes/payrollRoutes');
+const authRoutes = require("./routes/authRoutes");
+const employeeAuthRoutes = require("./routes/employeeAuthRoutes");
+const employeeRoutes = require("./routes/employeeRoutes");
+const trainingRoutes = require("./routes/trainingRoutes");
+const attendanceRoutes = require("./routes/attendanceRoutes");
+const leaveRoutes = require("./routes/leaveRoutes");
+const settingsRoutes = require("./routes/settingsRoutes");
+const payrollRoutes = require("./routes/payrollRoutes");
 
 const app = express();
 
 // Middleware
 // Comma-separated allowed origins. Set ALLOWED_ORIGINS env var on Render.
-const allowedOrigins = ("http://localhost:5173,https://ISPM-project-sliit.vercel.app").split(",").map(origin => origin.trim());
+const allowedOrigins =
+  "http://localhost:5173,https://ISPM-project-sliit.vercel.app"
+    .split(",")
+    .map((origin) => origin.trim());
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -33,15 +36,19 @@ const corsOptions = {
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
-
+let maxLimit;
+if (process.env.NODE_ENV === "development") {
+  maxLimit = 9999999;
+}else{
+  maxLimit = 30;
+}
 const limiter = ratelimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 30,
-  message: 'Too many requests from this IP, please try again after 15 minutes',
-})
+  max: maxLimit,
+  message: "Too many requests from this IP, please try again after 15 minutes",
+});
 
 app.use(limiter);
-
 
 // Handle preflight OPTIONS requests for all routes BEFORE any other middleware
 app.options("*", cors(corsOptions));
@@ -52,48 +59,50 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to ISPM Backend API' });
+app.get("/", (req, res) => {
+  res.json({ message: "Welcome to ISPM Backend API" });
 });
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'Server is running', timestamp: new Date() });
+app.get("/api/health", (req, res) => {
+  res.json({ status: "Server is running", timestamp: new Date() });
 });
 
 // Authentication routes
-app.use('/api/auth', authRoutes);
+app.use("/api/auth", authRoutes);
 
 // Employee authentication routes
-app.use('/api/employee-auth', employeeAuthRoutes);
+app.use("/api/employee-auth", employeeAuthRoutes);
 
 // Employee routes
-app.use('/api/employees', employeeRoutes);
+app.use("/api/employees", employeeRoutes);
 
 // Training routes
-app.use('/api/training', trainingRoutes);
+app.use("/api/training", trainingRoutes);
 
 // Attendance routes
-app.use('/api/attendance', attendanceRoutes);
+app.use("/api/attendance", attendanceRoutes);
 
 // Leave routes
-app.use('/api/leave', leaveRoutes);
+app.use("/api/leave", leaveRoutes);
 
 // Settings routes
-app.use('/api/settings', settingsRoutes);
+app.use("/api/settings", settingsRoutes);
 
 // Payroll routes
-app.use('/api/payroll', payrollRoutes);
+app.use("/api/payroll", payrollRoutes);
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+  res.status(404).json({ error: "Route not found" });
 });
 
 // Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: 'Internal server error', message: err.message });
+  res
+    .status(500)
+    .json({ error: "Internal server error", message: err.message });
 });
 
 module.exports = app;

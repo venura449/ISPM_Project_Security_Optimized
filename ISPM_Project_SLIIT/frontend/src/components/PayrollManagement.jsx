@@ -242,7 +242,7 @@ function generateSlipPDF(rec) {
 
 // ── Edit Payroll Modal ────────────────────────────────────────────────────────
 function EditPayrollModal({ record, onClose, onSaved }) {
-  const { apiFetch } = useApi();
+  
   const [form, setForm] = useState({
     basic_salary: record.basic_salary || 0,
     housing_allowance: record.housing_allowance || 0,
@@ -920,6 +920,7 @@ function DeleteModal({ record, onClose, onDeleted }) {
 
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function PayrollManagement() {
+  const { apiFetch } = useApi();
   const [tab, setTab] = useState("runs");
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());

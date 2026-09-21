@@ -127,7 +127,7 @@ const SettingsPanel = () => {
   const loadSettings = async () => {
     setLoading(true);
     try {
-      const res = await apiFetch(`/api/settings`);
+      const res = await apiFetch(`/settings`);
       const data = await res.json();
       if (data.success) {
         const map = {};
@@ -152,7 +152,7 @@ const SettingsPanel = () => {
         key,
         value,
       }));
-      const res = await apiFetch(`/api/settings`, {
+      const res = await apiFetch(`/settings`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

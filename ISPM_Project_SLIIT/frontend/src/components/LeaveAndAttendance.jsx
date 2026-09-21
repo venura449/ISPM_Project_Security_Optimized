@@ -103,9 +103,9 @@ const getInputCls = (touched, valid) => {
   return `${base} border-red-400 focus:border-red-400 focus:ring-2 focus:ring-red-100`;
 };
 
-// â”€â”€ New Request Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
 const NewRequestModal = ({ onSubmit, onCancel, loading }) => {
-  const {apiFetch} = useApi();
+  
   const [form, setForm] = useState({
     leave_type: "Annual",
     start_date: "",
@@ -414,6 +414,7 @@ const StatusBadge = ({ status }) => {
 
 // â”€â”€ Leave Management (main) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const LeaveManagement = () => {
+  const {apiFetch} = useApi();
   const [activeTab, setActiveTab] = useState("my");
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
@@ -424,8 +425,7 @@ const LeaveManagement = () => {
   const [deleteModal, setDeleteModal] = useState({ open: false, id: null });
   const [statusFilter, setStatusFilter] = useState("");
 
-  const API = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/leave`;
-  const token = () => localStorage.getItem("token");
+  const API = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/leave`;
 
   useEffect(() => {
     if (activeTab === "my") {

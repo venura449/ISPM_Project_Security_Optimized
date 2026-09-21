@@ -92,7 +92,7 @@ const DailyAttendance = () => {
   const loadAttendanceSheet = async () => {
     setLoading(true);
     try {
-      const res = await apiFetch(`/api/attendance/sheet?date=${selectedDate}`);
+      const res = await apiFetch(`/attendance/sheet?date=${selectedDate}`);
       const data = await res.json();
       if (data.success) {
         setAttendanceData(data.data || []);
@@ -129,7 +129,7 @@ const DailyAttendance = () => {
     setSaving((prev) => ({ ...prev, [employeeId]: true }));
     try {
       const res = await apiFetch(
-        `/api/attendance/mark`,
+        `/attendance/mark`,
         {
           method: "POST",
           body: JSON.stringify({
