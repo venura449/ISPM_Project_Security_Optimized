@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 
+import {useApi} from "../hooks/useApi";
+
+
 const inputCls =
-  "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 bg-white outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all placeholder-gray-400";
+"w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 bg-white outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all placeholder-gray-400";
 
 const selectCls =
-  "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 bg-white outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all";
+"w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 bg-white outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all";
 
-const statusBadge = {
-  Probation: "bg-yellow-50 text-yellow-700 border border-yellow-200",
+  const statusBadge = {
+    Probation: "bg-yellow-50 text-yellow-700 border border-yellow-200",
   Permanent: "bg-green-50 text-green-700 border border-green-200",
   Resigned: "bg-red-50  text-red-700  border border-red-200",
 };
@@ -21,6 +24,7 @@ const EmployeeList = ({
   onSelectEmployee,
   onDeleteEmployee,
 }) => {
+  const {apiFetch} = useApi();
   const [sortBy, setSortBy] = useState("name");
   const [currentPage, setCurrentPage] = useState(1);
   const PAGE_SIZE = 8;
@@ -32,7 +36,7 @@ const EmployeeList = ({
     generatedAt: null,
     loading: false,
   });
-
+  
   const departments = [
     "All",
     "Human Resources",
@@ -44,16 +48,15 @@ const EmployeeList = ({
     "Legal",
     "Administration",
   ];
-
+  
   const generatePassword = async (employeeId, employeeName) => {
     setPasswordModal((prev) => ({ ...prev, loading: true }));
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/employee-auth/generate-password`,
+      const response = await apiFetch(
+        `/api/employee-auth/generate-password`,
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ employee_id: employeeId }),
@@ -84,7 +87,7 @@ const EmployeeList = ({
     navigator.clipboard.writeText(text);
     toast.success("Password copied!");
   };
-
+  
   const closePasswordModal = () =>
     setPasswordModal({
       isOpen: false,
@@ -99,7 +102,7 @@ const EmployeeList = ({
     onFilterChange((prev) => ({ ...prev, [key]: value }));
     setCurrentPage(1);
   };
-
+  
   const sortedEmployees = [...employees].sort((a, b) => {
     if (sortBy === "name") return (a.name || "").localeCompare(b.name || "");
     if (sortBy === "status")
@@ -110,13 +113,13 @@ const EmployeeList = ({
       return new Date(b.joining_date) - new Date(a.joining_date);
     return 0;
   });
-
+  
   const totalPages = Math.max(1, Math.ceil(sortedEmployees.length / PAGE_SIZE));
   const pagedEmployees = sortedEmployees.slice(
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE,
   );
-
+  
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -125,7 +128,7 @@ const EmployeeList = ({
             className="animate-spin h-10 w-10 text-blue-500 mx-auto mb-3"
             fill="none"
             viewBox="0 0 24 24"
-          >
+            >
             <circle
               className="opacity-25"
               cx="12"

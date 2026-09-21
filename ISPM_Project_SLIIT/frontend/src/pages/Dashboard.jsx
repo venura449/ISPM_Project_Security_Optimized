@@ -10,6 +10,8 @@ import SettingsPanel from "../components/SettingsPanel";
 import EmployeeReport from "../components/EmployeeReport";
 import PayrollManagement from "../components/PayrollManagement";
 
+import { useApi } from "../hooks/useApi";
+
 // ── Icons ────────────────────────────────────────────────────────────────────
 const Icon = ({ d, className = "w-5 h-5" }) => (
   <svg
@@ -357,35 +359,33 @@ const QuickAction = ({ label, iconD, color, onClick }) => {
   );
 };
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const HomeContent = ({ user, setActiveTab }) => {
+  const {apiFetch} = useApi();
   const [stats, setStats] = useState(null);
   const [pendingLeaves, setPendingLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const headers = { Authorization: `Bearer ${token}` };
     const now = new Date();
     const today = now.toISOString().split("T")[0];
     const m = now.getMonth() + 1;
     const y = now.getFullYear();
 
+    const fetchOptions = {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
     Promise.allSettled([
-      fetch(`${API}/api/employees`, { headers: headers }).then((r) => r.json()),
-      fetch(`${API}/api/attendance/sheet?date=${today}`, {
-        headers: headers,
-      }).then((r) => r.json()),
-      fetch(`${API}/api/leave/pending`, { headers: headers }).then((r) =>
-        r.json(),
-      ),
-      fetch(`${API}/api/training/programs`, { headers: headers }).then((r) =>
-        r.json(),
-      ),
-      fetch(`${API}/api/payroll?month=${m}&year=${y}`, {
-        headers: headers,
-      }).then((r) => r.json()),
+      apiFetch(`/employees`).then((r) => r.json()),
+      apiFetch(`/attendance/sheet?date=${today}`).then((r) => r.json()),
+      apiFetch(`/leave/pending`).then((r) => r.json()),
+      apiFetch(`/training/programs`).then((r) => r.json()),
+      apiFetch(`/payroll?month=${m}&year=${y}`).then((r) => r.json()),
     ]).then(([empR, attR, leaveR, trainR, payR]) => {
       const emp = empR.status === "fulfilled" ? empR.value?.data || [] : [];
       const att = attR.status === "fulfilled" ? attR.value?.data || [] : [];
@@ -417,7 +417,7 @@ const HomeContent = ({ user, setActiveTab }) => {
       setPendingLeaves(leave.slice(0, 6));
       setLoading(false);
     });
-  }, []);
+  }, [apiFetch]);
 
   const fmtCurrency = (n) =>
     new Intl.NumberFormat("en-LK", {

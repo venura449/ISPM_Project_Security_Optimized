@@ -2,13 +2,16 @@
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
+import { useApi } from "../hooks/useApi";
+
+
 const Icon = ({ d, className = "w-5 h-5" }) => (
   <svg
-    className={className}
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-    strokeWidth={2}
+  className={className}
+  fill="none"
+  viewBox="0 0 24 24"
+  stroke="currentColor"
+  strokeWidth={2}
   >
     <path strokeLinecap="round" strokeLinejoin="round" d={d} />
   </svg>
@@ -38,22 +41,22 @@ const NAV = [
 ];
 
 const inputCls =
-  "flex items-center gap-3 border border-gray-200 rounded-xl px-4 transition-all duration-200 focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-50 hover:border-gray-300";
+"flex items-center gap-3 border border-gray-200 rounded-xl px-4 transition-all duration-200 focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-50 hover:border-gray-300";
 const textInputCls =
-  "w-full py-3 text-sm text-gray-700 bg-transparent outline-none placeholder-gray-400 disabled:opacity-50";
+"w-full py-3 text-sm text-gray-700 bg-transparent outline-none placeholder-gray-400 disabled:opacity-50";
 
 const dateInputCls =
-  "min-w-0 flex-1 py-3 text-sm text-gray-700 bg-white outline-none disabled:opacity-50 [color-scheme:light]";
+"min-w-0 flex-1 py-3 text-sm text-gray-700 bg-white outline-none disabled:opacity-50 [color-scheme:light]";
 
 const ValidationIcon = ({ valid }) =>
   valid ? (
     <svg
-      className="w-4 h-4 text-green-500 shrink-0"
-      fill="none"
+    className="w-4 h-4 text-green-500 shrink-0"
+    fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
       strokeWidth={2}
-    >
+      >
       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
     </svg>
   ) : (
@@ -63,19 +66,19 @@ const ValidationIcon = ({ valid }) =>
       viewBox="0 0 24 24"
       stroke="currentColor"
       strokeWidth={2}
-    >
+      >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
         d="M6 18L18 6M6 6l12 12"
-      />
+        />
     </svg>
   );
-
+  
 const getFieldCls = (touched, valid) => {
   const base =
     "flex items-center gap-3 border rounded-xl px-4 transition-all duration-200 hover:border-gray-300";
-  if (!touched)
+    if (!touched)
     return `${base} border-gray-200 focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-50`;
   if (valid)
     return `${base} border-green-400 focus-within:border-green-400 focus-within:ring-4 focus-within:ring-green-50`;
@@ -83,6 +86,7 @@ const getFieldCls = (touched, valid) => {
 };
 
 const EmployeeDashboard = () => {
+  const { apiFetch } = useApi();
   const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
@@ -169,14 +173,7 @@ const EmployeeDashboard = () => {
 
   const loadEmployeeProfile = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/employee-auth/profile`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        },
-      );
+      const response = await apiFetch(`/api/employee-auth/profile`);
 
       const data = await response.json();
       if (data.success) {
@@ -219,17 +216,13 @@ const EmployeeDashboard = () => {
 
   const updateProfile = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/employee-auth/profile`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
+      const response = await apiFetch(`/employee-auth/profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(formData),
+      });
 
       const data = await response.json();
       if (data.success) {
@@ -283,12 +276,10 @@ const EmployeeDashboard = () => {
     }
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/employee-auth/change-password`,
+      const response = await apiFetch(`/employee-auth/change-password`,
         {
           method: "PUT",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
@@ -326,12 +317,7 @@ const EmployeeDashboard = () => {
   const loadLeaveRequests = async () => {
     setLeaveLoading(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/leave/my-requests`,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        },
-      );
+      const response = await apiFetch(`/leave/my-requests`);
       const data = await response.json();
       if (data.success) setLeaveRequests(data.data || []);
     } catch (error) {
@@ -359,12 +345,11 @@ const EmployeeDashboard = () => {
     }
     setLeaveLoading(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/leave/request`,
+      const response = await apiFetch(
+        `/api/leave/request`,
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(leaveForm),
@@ -403,11 +388,10 @@ const EmployeeDashboard = () => {
   const cancelLeaveRequest = async (requestId) => {
     if (!window.confirm("Delete this leave request?")) return;
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/leave/request/${requestId}`,
+      const response = await apiFetch(
+        `/api/leave/request/${requestId}`,
         {
           method: "DELETE",
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         },
       );
       const data = await response.json();

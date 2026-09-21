@@ -4,7 +4,11 @@ import TrainingList from "./TrainingList";
 import CreateTrainingForm from "./CreateTrainingForm";
 import TrainingDetails from "./TrainingDetails";
 
+import { useApi } from "../hooks/useApi";
+
+
 const TrainingManagement = () => {
+  const { apiFetch } = useApi();
   const [programs, setPrograms] = useState([]);
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -16,7 +20,7 @@ const TrainingManagement = () => {
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({ type: "", status: "", search: "" });
 
-  const API_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/training`;
+  const API_URL = `/training`;
 
   const fetchPrograms = async () => {
     setLoading(true);
@@ -25,11 +29,7 @@ const TrainingManagement = () => {
       if (filters.type) params.append("type", filters.type);
       if (filters.status) params.append("status", filters.status);
       if (filters.search) params.append("search", filters.search);
-      const response = await fetch(`${API_URL}/programs?${params}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await apiFetch(`${API_URL}/programs?${params}`);
       const data = await response.json();
       if (data.success) setPrograms(data.data);
       else toast.error(data.message);
@@ -45,7 +45,7 @@ const TrainingManagement = () => {
   }, [filters]);
 
   const handleCreateProgram = async (formData) => {
-    const response = await fetch(`${API_URL}/programs`, {
+    const response = await apiFetch(`${API_URL}/programs`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
@@ -63,7 +63,7 @@ const TrainingManagement = () => {
 
   const handleUpdateProgram = async (programId, updateData) => {
     try {
-      const response = await fetch(`${API_URL}/programs/${programId}`, {
+      const response = await apiFetch(`${API_URL}/programs/${programId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updateData),
@@ -85,7 +85,7 @@ const TrainingManagement = () => {
 
   const confirmDelete = async () => {
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `${API_URL}/programs/${deleteModal.programId}`,
         { method: "DELETE" },
       );

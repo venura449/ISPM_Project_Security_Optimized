@@ -3,6 +3,8 @@ import { toast } from "react-toastify";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+import { useApi } from "../hooks/useApi";
+
 const labelCls = "block text-xs font-medium text-gray-500 mb-1";
 
 const STEPS = ["Basic Info", "Employment", "Dates & Pay"];
@@ -70,6 +72,7 @@ const STEP_FIELDS = {
 };
 
 const AddEmployeeForm = ({ onSubmit, onCancel }) => {
+  const {apiFetch} = useApi();
   const [loading, setLoading] = useState(false);
   const [idLoading, setIdLoading] = useState(true);
   const [currentStep, setCurrentStep] = useState(1);
@@ -102,14 +105,7 @@ const AddEmployeeForm = ({ onSubmit, onCancel }) => {
     const fetchNextId = async () => {
       setIdLoading(true);
       try {
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/employees/next-id`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          },
-        );
+        const res = await apiFetch("/employees/next-id");
         const data = await res.json();
         if (data.success) {
           setFormData((prev) => ({ ...prev, employee_id: data.data.next_id }));

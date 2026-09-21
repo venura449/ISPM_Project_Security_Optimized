@@ -2,7 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
+import {useApi} from "../hooks/useApi";
+
+
 const EmployeeLogin = () => {
+  const {apiFetch} = useApi();
   const [employeeId, setEmployeeId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -24,8 +28,8 @@ const EmployeeLogin = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/employee-auth/login`,
+      const response = await apiFetch(
+        `/api/employee-auth/login`,
         {
           method: "POST",
           headers: {
@@ -35,14 +39,14 @@ const EmployeeLogin = () => {
             employee_id: employeeId.toUpperCase(),
             password,
           }),
+          credentials: "include", // Include the HttpOnly cookie in request
         },
       );
 
       const data = await response.json();
 
       if (data.success) {
-        // Save token and user info
-        localStorage.setItem("token", data.token);
+        // Save and user info
         localStorage.setItem("userType", "employee");
         localStorage.setItem("user", JSON.stringify(data.user));
 

@@ -3,17 +3,19 @@ import { toast } from "react-toastify";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-// â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+import {useApi} from "../hooks/useApi";
+
+
 const fmt = (d) =>
   d
-    ? new Date(d).toLocaleDateString("en-US", {
+? new Date(d).toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
         year: "numeric",
       })
-    : "-";
+      : "-";
 
-const STATUS_CFG = {
+      const STATUS_CFG = {
   Pending: {
     bg: "bg-amber-100",
     text: "text-amber-700",
@@ -62,7 +64,7 @@ const FIELD = ({ label, children }) => (
 );
 
 const inputCls =
-  "w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all";
+"w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all";
 
 const ValidationIcon = ({ valid }) =>
   valid ? (
@@ -101,8 +103,9 @@ const getInputCls = (touched, valid) => {
   return `${base} border-red-400 focus:border-red-400 focus:ring-2 focus:ring-red-100`;
 };
 
-// â”€â”€ New Request Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
 const NewRequestModal = ({ onSubmit, onCancel, loading }) => {
+  
   const [form, setForm] = useState({
     leave_type: "Annual",
     start_date: "",
@@ -411,6 +414,7 @@ const StatusBadge = ({ status }) => {
 
 // â”€â”€ Leave Management (main) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const LeaveManagement = () => {
+  const {apiFetch} = useApi();
   const [activeTab, setActiveTab] = useState("my");
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
@@ -421,8 +425,7 @@ const LeaveManagement = () => {
   const [deleteModal, setDeleteModal] = useState({ open: false, id: null });
   const [statusFilter, setStatusFilter] = useState("");
 
-  const API = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/leave`;
-  const token = () => localStorage.getItem("token");
+  const API = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/leave`;
 
   useEffect(() => {
     if (activeTab === "my") {
@@ -436,9 +439,7 @@ const LeaveManagement = () => {
   const loadMyRequests = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/my-requests`, {
-        headers: { Authorization: `Bearer ${token()}` },
-      });
+      const res = await apiFetch(`/my-requests`);
       const data = await res.json();
       if (data.success) setLeaveRequests(data.data || []);
     } catch {
@@ -451,9 +452,7 @@ const LeaveManagement = () => {
   const loadPending = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/pending`, {
-        headers: { Authorization: `Bearer ${token()}` },
-      });
+      const res = await apiFetch(`/pending`);
       const data = await res.json();
       if (data.success) setPendingRequests(data.data || []);
     } catch {
@@ -465,9 +464,7 @@ const LeaveManagement = () => {
 
   const loadBalance = async () => {
     try {
-      const res = await fetch(`${API}/balance/1`, {
-        headers: { Authorization: `Bearer ${token()}` },
-      });
+      const res = await apiFetch(`/balance/1`);
       const data = await res.json();
       if (data.success) setLeaveBalance(data.data || []);
     } catch {
@@ -478,10 +475,9 @@ const LeaveManagement = () => {
   const handleSubmitRequest = async (formData) => {
     setSubmitting(true);
     try {
-      const res = await fetch(`${API}/request`, {
+      const res = await apiFetch(`/request`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token()}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
@@ -504,10 +500,9 @@ const LeaveManagement = () => {
 
   const handleApprove = async (id) => {
     try {
-      const res = await fetch(`${API}/request/${id}/approve`, {
+      const res = await apiFetch(`/request/${id}/approve`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token()}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ notes: "Approved" }),
@@ -524,10 +519,9 @@ const LeaveManagement = () => {
 
   const handleReject = async (id) => {
     try {
-      const res = await fetch(`${API}/request/${id}/reject`, {
+      const res = await apiFetch(`/request/${id}/reject`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token()}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ notes: "Rejected" }),
@@ -544,9 +538,8 @@ const LeaveManagement = () => {
 
   const confirmDelete = async () => {
     try {
-      const res = await fetch(`${API}/request/${deleteModal.id}`, {
+      const res = await apiFetch(`/request/${deleteModal.id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token()}` },
       });
       const data = await res.json();
       if (data.success) {

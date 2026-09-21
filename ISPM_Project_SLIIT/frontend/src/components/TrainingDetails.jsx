@@ -3,8 +3,11 @@ import { toast } from "react-toastify";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
+import { useApi } from "../hooks/useApi";
+
+
 const inputCls =
-  "w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 bg-white outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all placeholder-gray-400";
+"w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 bg-white outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all placeholder-gray-400";
 const selectCls =
   "w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 bg-white outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all";
 const labelCls = "block text-xs font-medium text-gray-500 mb-1";
@@ -24,6 +27,7 @@ const completionBadge = {
 };
 
 const TrainingDetails = ({ program, onUpdate, onClose, onProgramsChange }) => {
+  const { apiFetch } = useApi();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [details, setDetails] = useState(program);
@@ -36,7 +40,7 @@ const TrainingDetails = ({ program, onUpdate, onClose, onProgramsChange }) => {
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [employeeSearchInput, setEmployeeSearchInput] = useState("");
 
-  const API_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/training`;
+  const API_URL = `/training`;
 
   useEffect(() => {
     fetchProgramDetails();
@@ -45,9 +49,7 @@ const TrainingDetails = ({ program, onUpdate, onClose, onProgramsChange }) => {
 
   const fetchEmployees = async () => {
     try {
-      const r = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/employees`,
-      );
+      const r = await apiFetch(`/api/employees`);
       const d = await r.json();
       if (d.success) setEmployees(d.data);
     } catch {}
@@ -55,7 +57,7 @@ const TrainingDetails = ({ program, onUpdate, onClose, onProgramsChange }) => {
 
   const fetchProgramDetails = async () => {
     try {
-      const r = await fetch(`${API_URL}/programs/${program.id}`);
+      const r = await apiFetch(`${API_URL}/programs/${program.id}`);
       const d = await r.json();
       if (d.success) {
         setDetails(d.data);
@@ -75,7 +77,7 @@ const TrainingDetails = ({ program, onUpdate, onClose, onProgramsChange }) => {
     }
     setLoading(true);
     try {
-      const r = await fetch(`${API_URL}/programs/${program.id}/assign`, {
+      const r = await apiFetch(`${API_URL}/programs/${program.id}/assign`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
