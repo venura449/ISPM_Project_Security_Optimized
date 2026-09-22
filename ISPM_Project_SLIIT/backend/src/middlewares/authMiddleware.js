@@ -1,9 +1,32 @@
 const AuthService = require("../services/auth/AuthService");
+const Employee = require("../models/employee/Employee");
+
+const isEmployeeTokenRevoked = async (decoded) => {
+  if (decoded.type !== "employee") {
+    return false;
+  }
+
+  const employee = await Employee.findById(decoded.id);
+  if (!employee) {
+    return true;
+  }
+
+  if (!employee.password_generated_at) {
+    return false;
+  }
+
+  const passwordChangedAt = new Date(employee.password_generated_at);
+  if (decoded.passwordVersion) {
+    return decoded.passwordVersion !== passwordChangedAt.toISOString();
+  }
+
+  return decoded.iat * 1000 < passwordChangedAt.getTime();
+};
 
 /**
  * Middleware to verify JWT token and attach user to request
  */
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   try {
     const token = req.cookies.token; //get token from cookies
 
@@ -21,6 +44,13 @@ const authMiddleware = (req, res, next) => {
       return res.status(401).json({
         success: false,
         message: "Invalid or expired token",
+      });
+    }
+
+    if (await isEmployeeTokenRevoked(decoded)) {
+      return res.status(401).json({
+        success: false,
+        message: "Session expired. Please log in again.",
       });
     }
 
