@@ -10,6 +10,7 @@ const LoginComponent = ({ onSwitch }) => {
   const [rememberMe, setRememberMe] = useState(false);
   const { login, loading } = useAuth();
   const navigate = useNavigate();
+  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -31,6 +32,10 @@ const LoginComponent = ({ onSwitch }) => {
 
   return (
     <form onSubmit={handleLogin} className="space-y-5">
+      <button type="button" onClick={() => { window.location.href = `${apiBase}/auth/google`; }} className="w-full border border-slate-200 bg-white text-slate-700 font-semibold py-3 rounded-2xl hover:bg-slate-50 transition">
+        <i className="fab fa-google mr-2"></i> Continue with Google
+      </button>
+      <div className="text-center text-xs text-slate-400">or use your email and password</div>
       {/* Email */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1.5">

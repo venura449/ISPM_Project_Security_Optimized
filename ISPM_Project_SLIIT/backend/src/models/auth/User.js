@@ -45,7 +45,7 @@ class User {
   static async create(userData) {
     const connection = await pool.getConnection();
     try {
-      const { name, email, password } = userData;
+      const { name, email, password = null } = userData;
       const [result] = await connection.query(
         'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
         [name, email, password]
@@ -59,6 +59,10 @@ class User {
     } finally {
       connection.release();
     }
+  }
+
+  static async createOAuthUser({ name, email }) {
+    return this.create({ name, email, password: null });
   }
 
   /**

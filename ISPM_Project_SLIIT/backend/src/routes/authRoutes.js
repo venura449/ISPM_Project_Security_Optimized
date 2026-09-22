@@ -26,6 +26,8 @@ router.post('/register', AuthController.register);
  * @body {string} password - User's password
  */
 router.post('/login', AuthController.login);
+router.get('/google', AuthController.googleStart);
+router.get('/google/callback', AuthController.googleCallback);
 
 /**
  * @route POST /api/auth/verify
