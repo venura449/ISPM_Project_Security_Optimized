@@ -1,7 +1,26 @@
 const AuthService = require("../../services/auth/AuthService");
 const User = require("../../models/auth/User");
+const GoogleAuthService = require("../../services/auth/GoogleAuthService");
 
 class AuthController {
+  static googleStart(req, res) {
+    const state = GoogleAuthService.createState();
+    res.cookie('oauth_state', state, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 600000 });
+    res.redirect(GoogleAuthService.getAuthorizationUrl(state));
+  }
+
+  static async googleCallback(req, res) {
+    try {
+      if (!req.query.code || req.query.state !== req.cookies.oauth_state) return res.status(400).send('Invalid OAuth state');
+      const { token } = await GoogleAuthService.signIn(req.query.code);
+      res.clearCookie('oauth_state');
+      res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 86400000 });
+      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/dashboard`);
+    } catch (error) {
+      console.error('Google callback error:', error.message);
+      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?oauth_error=1`);
+    }
+  }
   /**
    * Register a new user
    * POST /api/auth/register
