@@ -187,10 +187,19 @@ class EmployeeService {
     try {
       const employees = await Employee.getAll(filters);
 
+      //stripping the password field from employee records
+      const safeEmployees = employees.map(emp=>{
+        const empData = typeof emp.toJSON === 'function' ? emp.toJSON() : emp;
+
+        //destructuring to remove password field and return the rest of the data
+        const {password, ...safeData} = empData;
+        return safeData;
+      })
+
       return {
         success: true,
-        data: employees,
-        count: employees.length,
+        data: safeEmployees,
+        count: safeEmployees.length,
         message: 'Employees retrieved successfully'
       };
     } catch (err) {
