@@ -135,8 +135,8 @@ class EmployeeAuthService {
                     new Date(employee.temporary_password_expires_at) < new Date()
                 ) {
                     return {
-                    success: false,
-                    message: "Temporary password has expired. Contact an administrator."
+                        success: false,
+                        message: "Temporary password has expired. Contact an administrator."
                     };
                 }
 
@@ -153,15 +153,19 @@ class EmployeeAuthService {
 
                 if (result.affectedRows === 0) {
                     return {
-                    success: false,
-                    message: "Temporary password has already been used. Contact an administrator."
+                        success: false,
+                        message: "Temporary password has already been used. Contact an administrator."
                     };
                 }
             }
 
 
             // Generate token
-            const token = this.generateToken(employee.id, 'employee');
+            const token = this.generateToken(
+                employee.id,
+                'employee',
+                employee.password_generated_at
+            );
 
             return {
                 success: true,
@@ -274,11 +278,18 @@ class EmployeeAuthService {
      * Generate JWT token
      * @param {number} userId - User/Employee ID
      * @param {string} userType - 'employee' or 'user'
+     * @param {Date|string|null} passwordVersion - Current password version
      * @returns {string} JWT token
      */
-    static generateToken(userId, userType = 'employee') {
+    static generateToken(userId, userType = 'employee', passwordVersion = null) {
+        const payload = { id: userId, type: userType };
+
+        if (passwordVersion) {
+            payload.passwordVersion = new Date(passwordVersion).toISOString();
+        }
+
         return jwt.sign(
-            { id: userId, type: userType },
+            payload,
             process.env.JWT_SECRET || 'your_jwt_secret_key_change_in_production',
             { expiresIn: process.env.JWT_EXPIRY || '7d' }
         );
