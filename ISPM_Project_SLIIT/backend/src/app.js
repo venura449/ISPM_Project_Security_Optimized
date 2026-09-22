@@ -3,6 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 const cookieParser = require("cookie-parser");
 const ratelimit = require("express-rate-limit");
+const helmet = require("helmet");
 
 // Import routes
 const authRoutes = require("./routes/authRoutes");
@@ -15,6 +16,26 @@ const settingsRoutes = require("./routes/settingsRoutes");
 const payrollRoutes = require("./routes/payrollRoutes");
 
 const app = express();
+
+app.set("trust proxy", 1);
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        baseUri: ["'self'"],
+        frameAncestors: ["'none'"],
+        objectSrc: ["'none'"],
+      },
+    },
+    frameguard: { action: "deny" },
+    noSniff: true,
+    strictTransportSecurity: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+    },
+  }),
+);
 
 // Middleware
 // Comma-separated allowed origins. Set ALLOWED_ORIGINS env var on Render.
@@ -39,7 +60,7 @@ const corsOptions = {
 let maxLimit;
 if (process.env.NODE_ENV === "development") {
   maxLimit = 9999999;
-}else{
+} else {
   maxLimit = 30;
 }
 const limiter = ratelimit({
