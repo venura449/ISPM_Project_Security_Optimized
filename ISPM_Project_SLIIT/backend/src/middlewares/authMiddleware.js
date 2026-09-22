@@ -105,8 +105,21 @@ const requireAdminUser = (req, res, next) => {
   next();
 };
 
+const authorizeRoles = (...allowedRoles) => {
+  return (req, res, next) => {
+    if (!req.user || !allowedRoles.includes(req.user.type)) {
+      return res.status(403).json({
+        success: false,
+        message: "Forbidden: You do not have permission to perform this action",
+      });
+    }
+    next();
+  };
+};
+
 module.exports = {
   authMiddleware,
   optionalAuthMiddleware,
   requireAdminUser,
+  authorizeRoles,
 };

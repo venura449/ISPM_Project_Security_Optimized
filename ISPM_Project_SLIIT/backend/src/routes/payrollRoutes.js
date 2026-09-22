@@ -1,18 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const PayrollController = require('../controllers/payroll/PayrollController');
-const { authMiddleware } = require('../middlewares/authMiddleware');
+const { authMiddleware, authorizeRoles } = require('../middlewares/authMiddleware');
 
 // All routes require authentication
 router.use(authMiddleware);
 
 // Salary structures
 router.get('/salary-structures', PayrollController.getAllSalaryStructures);
-router.get('/salary-structure/:employeeId', authMiddleware, PayrollController.getSalaryStructure);
+router.get('/salary-structure/:employeeId', authorizeRoles('admin'), PayrollController.getSalaryStructure);
 router.post('/salary-structure', PayrollController.upsertSalaryStructure);
 
 // Payroll generation (must come before /:id)
-router.post('/generate', PayrollController.generatePayroll);
+router.post('/generate', authorizeRoles('admin', 'hr', 'manager'), PayrollController.generatePayroll);
 
 // Employee payroll history (must come before /:id)
 router.get('/employee/:employeeId', PayrollController.getEmployeePayrollHistory);
@@ -21,7 +21,7 @@ router.get('/employee/:employeeId', PayrollController.getEmployeePayrollHistory)
 router.get('/', PayrollController.getPayrollList);
 router.post('/', PayrollController.createPayrollRecord);
 router.get('/:id', PayrollController.getPayrollRecord);
-router.put('/:id', PayrollController.updatePayrollRecord);
+router.put('/:id',authorizeRoles('admin', 'hr', 'manager'), PayrollController.updatePayrollRecord);
 router.delete('/:id', PayrollController.deletePayrollRecord);
 
 module.exports = router;
