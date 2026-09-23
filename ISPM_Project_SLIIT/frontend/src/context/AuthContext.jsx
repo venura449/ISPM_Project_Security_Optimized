@@ -10,7 +10,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const API_URL = `/auth`; 
 
   // Check if session is valid on mount
   useEffect(() => {
@@ -20,15 +19,17 @@ export const AuthProvider = ({ children }) => {
   // Verify session validity via HttpOnly cookie
   const verifySession = async () => {
     try {
+      const userType = localStorage.getItem("userType");
+      const endpoint = userType === "employee" ? "/employee-auth/verify" : "/auth/verify";
       // apiFetch automatically includes credentials: "include"
-      const response = await apiFetch(`${API_URL}/verify`, {
+      const response = await apiFetch(endpoint, {
         method: "POST",
       });
 
       const data = await response.json();
 
       if (data.success) {
-        setUser(data.user);
+        setUser(data.decoded || data.user);
       } else {
         setUser(null);
       }
@@ -45,7 +46,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await apiFetch(`${API_URL}/register`, {
+      const response = await apiFetch(`/auth/register`, {
         method: "POST",
         body: JSON.stringify({ name, email, password }),
       });
@@ -77,7 +78,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await apiFetch(`${API_URL}/login`, {
+      const response = await apiFetch(`/auth/login`, {
         method: "POST",
         body: JSON.stringify({ email, password }),
       });
@@ -105,9 +106,10 @@ export const AuthProvider = ({ children }) => {
   // Logout user
   const logout = useCallback(async () => {
     try {
-      await apiFetch(`${API_URL}/logout`, {
-        method: "POST",
-      });
+      const userType = localStorage.getItem("userType");
+      const endpoint = userType === "employee" ? "/employee-auth/logout" : "/auth/logout";
+      
+      await apiFetch(endpoint, { method: "POST" });
     } catch (err) {
       console.error("Logout error:", err);
     }
@@ -124,6 +126,7 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
+    setUser,
     loading,
     error,
     register,

@@ -53,7 +53,7 @@ const EmployeeList = ({
     setPasswordModal((prev) => ({ ...prev, loading: true }));
     try {
       const response = await apiFetch(
-        `/api/employee-auth/generate-password`,
+        `/employee-auth/generate-password`,
         {
           method: "POST",
           headers: {

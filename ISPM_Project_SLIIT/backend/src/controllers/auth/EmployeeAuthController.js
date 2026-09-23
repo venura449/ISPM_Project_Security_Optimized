@@ -63,6 +63,12 @@ class EmployeeAuthController {
             const result = await EmployeeAuthService.login(employee_id, password);
 
             if (result.success) {
+                res.cookie('token', result.token,{
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: "lax",
+                    maxAge: 24*60*60*1000
+                });
                 res.status(200).json({
                     success: true,
                     message: result.message,
@@ -197,7 +203,7 @@ class EmployeeAuthController {
      */
     static async verifyToken(req, res) {
         try {
-            const token = req.headers.authorization?.split(' ')[1];
+            const token = req.cookies.token;
 
             if (!token) {
                 return res.status(401).json({
@@ -235,6 +241,11 @@ class EmployeeAuthController {
      */
     static async logout(req, res) {
         try {
+            res.clearCookie('token',{
+                httpOnly:true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: "lax",
+            });
             res.status(200).json({
                 success: true,
                 message: 'Logout successful. Please remove the token from client storage.'

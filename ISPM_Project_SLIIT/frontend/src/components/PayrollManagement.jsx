@@ -242,6 +242,7 @@ function generateSlipPDF(rec) {
 
 // ── Edit Payroll Modal ────────────────────────────────────────────────────────
 function EditPayrollModal({ record, onClose, onSaved }) {
+  const {apiFetch} = useApi();
   
   const [form, setForm] = useState({
     basic_salary: record.basic_salary || 0,
@@ -519,6 +520,7 @@ function EditPayrollModal({ record, onClose, onSaved }) {
 
 // ── Edit Salary Structure Modal ──────────────────────────────────────────────
 function EditStructureModal({ structure, employees, onClose, onSaved }) {
+  const {apiFetch} = useApi();
   const [form, setForm] = useState(
     structure
       ? {
@@ -754,6 +756,7 @@ function EditStructureModal({ structure, employees, onClose, onSaved }) {
 
 // ── Generate Payroll Modal ────────────────────────────────────────────────────
 function GenerateModal({ month, year, onClose, onGenerated }) {
+  const {apiFetch} = useApi();
   const [generating, setGenerating] = useState(false);
 
   const handleGenerate = async () => {
@@ -841,6 +844,7 @@ function GenerateModal({ month, year, onClose, onGenerated }) {
 
 // ── Delete Confirm Modal ─────────────────────────────────────────────────────
 function DeleteModal({ record, onClose, onDeleted }) {
+  const {apiFetch} = useApi();
   const [deleting, setDeleting] = useState(false);
 
   const handleDelete = async () => {
