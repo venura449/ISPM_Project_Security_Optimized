@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Employee = require('../../models/employee/Employee');
+const { validatePassword } = require('../../utils/passwordValidator');
 require('dotenv').config();
 
 class EmployeeAuthService {
@@ -211,10 +212,11 @@ class EmployeeAuthService {
                 };
             }
 
-            if (newPassword.length < 6) {
+            const passwordValidation = validatePassword(newPassword);
+            if (!passwordValidation.isValid) {
                 return {
                     success: false,
-                    message: 'New password must be at least 6 characters long'
+                    message: passwordValidation.message
                 };
             }
 
