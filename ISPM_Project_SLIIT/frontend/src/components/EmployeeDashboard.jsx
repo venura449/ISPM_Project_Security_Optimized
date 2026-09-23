@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { useApi } from "../hooks/useApi";
+import {useAuth} from "../hooks/useAuth";
 
 
 const Icon = ({ d, className = "w-5 h-5" }) => (
@@ -87,6 +88,7 @@ const getFieldCls = (touched, valid) => {
 
 const EmployeeDashboard = () => {
   const { apiFetch } = useApi();
+  const {logout} = useAuth();
   const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
@@ -159,21 +161,14 @@ const EmployeeDashboard = () => {
 
   // Check authentication on mount
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userType = localStorage.getItem("userType");
-
-    if (!token || userType !== "employee") {
-      navigate("/employee-login");
-      return;
-    }
 
     loadEmployeeProfile();
     loadLeaveRequests();
-  }, [navigate]);
+  }, []);
 
   const loadEmployeeProfile = async () => {
     try {
-      const response = await apiFetch(`/api/employee-auth/profile`);
+      const response = await apiFetch(`/employee-auth/profile`);
 
       const data = await response.json();
       if (data.success) {
@@ -346,7 +341,7 @@ const EmployeeDashboard = () => {
     setLeaveLoading(true);
     try {
       const response = await apiFetch(
-        `/api/leave/request`,
+        `/leave/request`,
         {
           method: "POST",
           headers: {
@@ -389,7 +384,7 @@ const EmployeeDashboard = () => {
     if (!window.confirm("Delete this leave request?")) return;
     try {
       const response = await apiFetch(
-        `/api/leave/request/${requestId}`,
+        `/leave/request/${requestId}`,
         {
           method: "DELETE",
         },
@@ -415,10 +410,9 @@ const EmployeeDashboard = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userType");
-    localStorage.removeItem("user");
+
+  const handleLogout = async () => {
+    await logout();
     toast.success("Logged out successfully!", {
       position: "top-right",
       autoClose: 2000,
