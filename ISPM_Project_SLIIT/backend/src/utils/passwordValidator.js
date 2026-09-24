@@ -83,6 +83,30 @@ function validatePassword(password) {
     };
   }
 
+  // Lowercase character check
+  if (!/[a-z]/.test(password)) {
+    return {
+      isValid: false,
+      message: 'Password must contain at least one lowercase letter.'
+    };
+  }
+
+  // Uppercase character check
+  if (!/[A-Z]/.test(password)) {
+    return {
+      isValid: false,
+      message: 'Password must contain at least one uppercase letter.'
+    };
+  }
+
+  // Special character check
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password)) {
+    return {
+      isValid: false,
+      message: 'Password must contain at least one special character (e.g. !@#$%^&*).'
+    };
+  }
+
   const lowerPassword = password.toLowerCase().trim();
 
   // Common password check
@@ -93,11 +117,11 @@ function validatePassword(password) {
     };
   }
 
-  // Repeated character check (e.g. 'aaaaaa', '11111111')
-  if (isRepeatedChar(password)) {
+  // Repeated character check (e.g. 'aaaaaaaa', '11111111') or 4+ consecutive duplicate characters
+  if (isRepeatedChar(password) || /(.)\1{3,}/i.test(password)) {
     return {
       isValid: false,
-      message: 'Password cannot consist of a single repeated character.'
+      message: 'Password cannot consist of repeated characters (e.g., aaaaaaaa).'
     };
   }
 

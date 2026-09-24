@@ -153,7 +153,15 @@ const EmployeeDashboard = () => {
 
   const validatePasswordField = (name, val) => {
     if (name === "oldPassword") return val.length > 0;
-    if (name === "newPassword") return val.length >= 8;
+    if (name === "newPassword") {
+      return (
+        val.length >= 8 &&
+        /[a-z]/.test(val) &&
+        /[A-Z]/.test(val) &&
+        /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(val) &&
+        !/(.)\1{3,}/i.test(val)
+      );
+    }
     if (name === "confirmPassword")
       return val.length >= 8 && val === passwordData.newPassword;
     return true;
@@ -1600,7 +1608,7 @@ const EmployeeDashboard = () => {
                       className="w-4 h-4 text-blue-500 shrink-0 mt-0.5"
                     />
                     <p className="text-xs text-blue-600 leading-relaxed">
-                      Minimum 8 characters. Avoid common words or simple patterns for better security.
+                      Minimum 8 characters. Must include at least 1 uppercase letter, 1 lowercase letter, and 1 special character. Cannot use duplicate/repeated characters (e.g., aaaaaaaa).
                     </p>
                   </div>
                 </div>

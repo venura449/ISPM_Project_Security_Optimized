@@ -10,10 +10,34 @@ const RegisterComponent = ({ onSwitch }) => {
 
   const getStrength = () => {
     if (password.length === 0) return 0;
-    if (password.length < 4) return 1;
-    if (password.length < 7) return 2;
-    if (password.length < 10) return 3;
-    return 4;
+
+    const isRepeated =
+      /^(\x20|.)\1+$/.test(password) ||
+      new Set(password.toLowerCase().split("")).size === 1 ||
+      /(.)\1{3,}/i.test(password);
+
+    const isCommon = [
+      "123456",
+      "password",
+      "12345678",
+      "qwerty",
+      "123456789",
+      "admin",
+      "admin123",
+      "letmein",
+      "welcome",
+    ].includes(password.toLowerCase().trim());
+
+    if (password.length < 8 || isRepeated || isCommon) {
+      return 1;
+    }
+
+    let score = 1;
+    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password)) score++;
+
+    return Math.min(score, 4);
   };
 
   const strengthMeta = [
@@ -36,6 +60,25 @@ const RegisterComponent = ({ onSwitch }) => {
 
     if (password.length < 8) {
       toast.error("Password must be at least 8 characters");
+      return;
+    }
+
+    if (!/[a-z]/.test(password) || !/[A-Z]/.test(password)) {
+      toast.error("Password must contain both uppercase and lowercase letters");
+      return;
+    }
+
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password)) {
+      toast.error("Password must contain at least one special character");
+      return;
+    }
+
+    if (
+      /^(\x20|.)\1+$/.test(password) ||
+      new Set(password.toLowerCase().split("")).size === 1 ||
+      /(.)\1{3,}/i.test(password)
+    ) {
+      toast.error("Password cannot consist of repeated characters (e.g., aaaaaaaa)");
       return;
     }
 
@@ -138,7 +181,7 @@ const RegisterComponent = ({ onSwitch }) => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Min. 6 characters"
+            placeholder="Min. 8 chars (Upper, Lower, Special)"
             disabled={loading}
             className="w-full py-3 text-sm text-gray-700 bg-transparent outline-none placeholder-gray-400 disabled:opacity-50"
             required
