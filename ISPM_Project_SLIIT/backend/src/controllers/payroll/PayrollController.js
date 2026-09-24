@@ -1,4 +1,6 @@
 const PayrollModel = require("../../models/payroll/PayrollModel");
+const EmployeeModel = require("../../models/employee/Employee");
+const Employee = require("../../models/employee/Employee");
 
 class PayrollController {
   // GET /api/payroll?month=&year=&status=
@@ -35,14 +37,22 @@ class PayrollController {
       const requestedId = req.params.employeeId;
 
       // IDOR Protection: Ensure employees only query their own ID
-      if (req.user.type === 'employee' && String(req.user.id) !== String(requestedId)) {
-        return res.status(403).json({
-          success: false,
-          message: 'Forbidden: You can only view your own salary structure.'
-        });
+      if (req.user.type === "employee") {
+        const currentEmployee = await Employee.findById(req.user.id);
+
+        if (
+          !currentEmployee ||
+          String(currentEmployee.id) !== String(requestedId)
+        ) {
+          return res.status(403).json({
+            success: false,
+            message:
+              "Forbidden: You are not authorized to access this resource.",
+          });
+        }
       }
 
-      const data = await PayrollModel.getSalaryStructure(req.params.employeeId);
+      const data = await PayrollModel.getSalaryStructure(requestedId);
       res.json({ success: true, data });
     } catch (err) {
       console.error("getSalaryStructure error:", err);
@@ -75,15 +85,21 @@ class PayrollController {
   static async getEmployeePayrollHistory(req, res) {
     try {
       const requestId = req.params.employeeId;
-      const userId = req.user.id;
       const userType = req.user.type;
 
       // IDOR Protection: If the user is an 'employee', they can only request their own ID.
-      if (userType === "employee" && String(userId) !== String(requestId)) {
-        return res.status(403).json({
-          success: false,
-          message: "Forbidden: You are not authorized to access this resource.",
-        });
+      if (userType === "employee") {
+        const currentEmployee = await Employee.findById(req.user.id);
+        if (
+          !currentEmployee ||
+          String(currentEmployee.id) !== String(requestId)
+        ) {
+          return res.status(403).json({
+            success: false,
+            message:
+              "Forbidden: You are not authorized to access this resource.",
+          });
+        }
       }
 
       const data = await PayrollModel.getEmployeePayrollHistory(requestedId);
@@ -103,13 +119,18 @@ class PayrollController {
           .status(404)
           .json({ success: false, message: "Payroll record not found" });
       }
-      
+
       // IDOR Protection: If the user is an 'employee', they can only request their own ID.
-      if (req.user.type === "employee" && String(record.employee_id) !== String(req.user.id)){
-        return res.status(403).json({
-          success:false,
-          message: 'Forbidden: You are not authorized to access this payroll record.',
-        });
+      if (req.user.type === "employee") {
+        const currentEmployee = await Employee.findById(req.user.id);
+
+        if (!currentEmployee || String(currentEmployee.id) !== String(record.employeeId)) {
+          return res.status(403).json({
+            success: false,
+            message:
+              "Forbidden: You are not authorized to access this payroll record.",
+          });
+        }
       }
       res.json({ success: true, data: record });
     } catch (err) {
@@ -156,13 +177,11 @@ class PayrollController {
         });
       }
       const id = await PayrollModel.createPayrollRecord(data);
-      res
-        .status(201)
-        .json({
-          success: true,
-          data: { id },
-          message: "Payroll record created",
-        });
+      res.status(201).json({
+        success: true,
+        data: { id },
+        message: "Payroll record created",
+      });
     } catch (err) {
       if (err.code === "ER_DUP_ENTRY") {
         return res.status(409).json({
