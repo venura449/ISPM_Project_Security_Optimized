@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -153,9 +153,17 @@ const EmployeeDashboard = () => {
 
   const validatePasswordField = (name, val) => {
     if (name === "oldPassword") return val.length > 0;
-    if (name === "newPassword") return val.length >= 6;
+    if (name === "newPassword") {
+      return (
+        val.length >= 8 &&
+        /[a-z]/.test(val) &&
+        /[A-Z]/.test(val) &&
+        /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(val) &&
+        !/(.)\1{3,}/i.test(val)
+      );
+    }
     if (name === "confirmPassword")
-      return val.length >= 6 && val === passwordData.newPassword;
+      return val.length >= 8 && val === passwordData.newPassword;
     return true;
   };
 
@@ -262,8 +270,8 @@ const EmployeeDashboard = () => {
       return;
     }
 
-    if (passwordData.newPassword.length < 6) {
-      toast.error("New password must be at least 6 characters", {
+    if (passwordData.newPassword.length < 8) {
+      toast.error("New password must be at least 8 characters", {
         position: "top-right",
         autoClose: 3000,
       });
@@ -1600,8 +1608,7 @@ const EmployeeDashboard = () => {
                       className="w-4 h-4 text-blue-500 shrink-0 mt-0.5"
                     />
                     <p className="text-xs text-blue-600 leading-relaxed">
-                      Minimum 6 characters. Use a mix of letters, numbers, and
-                      special characters for better security.
+                      Minimum 8 characters. Must include at least 1 uppercase letter, 1 lowercase letter, and 1 special character. Cannot use duplicate/repeated characters (e.g., aaaaaaaa).
                     </p>
                   </div>
                 </div>

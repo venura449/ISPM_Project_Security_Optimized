@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import LoginComponent from "../components/LoginForm";
+import RegisterComponent from "../components/RegisterForm";
 
 export const AuthPage = () => {
   const [mounted, setMounted] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
 
   useEffect(() => {
     setTimeout(() => setMounted(true), 50);
@@ -100,19 +102,23 @@ export const AuthPage = () => {
             </div>
           </div>
 
-          {/* LOGIN PANEL */}
+          {/* FORM PANEL */}
           <div className="form-panel flex-1 flex flex-col">
             <div className="flex-1 p-8 lg:p-10">
               <div className="mb-7">
                 <h2 className="text-2xl font-bold text-gray-800">
-                  Welcome back
+                  {isLogin ? "Welcome back" : "Create an account"}
                 </h2>
                 <p className="text-gray-500 text-sm mt-1.5">
-                  Sign in to continue
+                  {isLogin ? "Sign in to continue" : "Fill in your details to get started"}
                 </p>
               </div>
 
-              <LoginComponent />
+              {isLogin ? (
+                <LoginComponent onSwitch={() => setIsLogin(false)} />
+              ) : (
+                <RegisterComponent onSwitch={() => setIsLogin(true)} />
+              )}
             </div>
           </div>
         </div>
