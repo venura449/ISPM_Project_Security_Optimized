@@ -24,8 +24,8 @@ export const Register = ({ onSwitchToLogin }) => {
       setLocalError('Email is required');
       return false;
     }
-    if (password.length < 6) {
-      setLocalError('Password must be at least 6 characters');
+    if (password.length < 8) {
+      setLocalError('Password must be at least 8 characters');
       return false;
     }
     if (password !== confirmPassword) {
