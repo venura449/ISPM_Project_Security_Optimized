@@ -420,12 +420,28 @@ const EmployeeDashboard = () => {
 
 
   const handleLogout = async () => {
-    await logout();
-    toast.success("Logged out successfully!", {
-      position: "top-right",
-      autoClose: 2000,
-    });
-    navigate("/employee-login");
+    try{
+      const response = await apiFetch(
+        `/employee-auth/logout`,
+        {
+          method : "POST"
+        },
+      );
+
+      if(response){
+        await logout();
+        toast.success("Logged out successfully!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      navigate("/employee-login");
+      }
+    }catch(error) {
+      toast.error("Error: " + error.message, {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
   };
 
   if (loading) {

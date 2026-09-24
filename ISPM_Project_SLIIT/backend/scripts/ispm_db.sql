@@ -1018,6 +1018,15 @@ ALTER TABLE `users`
 UPDATE `users`
 SET `role` = 'admin'
 WHERE `email` = 'gaya@gmail.com';
+
+--
+-- Add token version
+--
+ALTER TABLE `employees`
+  ADD COLUMN `token_version` int NOT NULL DEFAULT 1;
+
+ALTER TABLE `users`
+  ADD COLUMN `token_version` int NOT NULL DEFAULT 1;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

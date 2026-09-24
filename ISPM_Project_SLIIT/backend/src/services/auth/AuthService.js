@@ -195,8 +195,37 @@ class AuthService {
         };
       }
 
+      const connection = require('../../../config/database');
+      const conn = await connection.getConnection();
+      let newTokenVersion;
+
+      try{
+        const [result] = await conn.query(
+          `UPDATE employees
+          SET token_version = token_version + 1
+          WHERE id = ?`,
+          [user.id]
+       );
+
+        if (result.affectedRows === 0) {
+          return {
+            success: false,
+            message: 'Failed to create login session'
+          };
+        }
+        const [rows] = await conn.query(
+          `SELECT token_version
+          FROM employees
+          WHERE id = ?`,
+          [user.id]
+        );
+
+        newTokenVersion = rows[0].token_version;
+      } finally {
+        conn.release();
+      }
       // Generate token
-      const token = await this.generateToken(user.id);
+      const token = await this.generateToken(user.id,newTokenVersion);
 
       return {
         success: true,
@@ -225,11 +254,12 @@ class AuthService {
    * @param {number} userId - User ID
    * @returns {string} JWT token
    */
-  static async generateToken(userId) {
+  static async generateToken(userId,newTokenVersion) {
     const user = await User.findById(userId);
     const userType = user.role;
+    const tokenVersion = user.token_version;
     return jwt.sign(
-      { id: userId, type: userType },
+      { id: userId, type: userType, tokenVersion: newTokenVersion },
       process.env.JWT_SECRET || 'your_jwt_secret_key_change_in_production',
       { expiresIn: process.env.JWT_EXPIRY || '7d' }
     );
@@ -349,6 +379,44 @@ class AuthService {
         success: false,
         message: 'Password change failed: ' + error.message
       };
+    }
+  }
+
+  /**
+    * Remove token version
+  */
+  static async logoutUpdate(userId) {
+     const connection = require('../../../config/database');
+    const conn = await connection.getConnection();
+
+    try {
+        const [result] = await conn.query(
+            `UPDATE users
+            SET token_version = token_version + 1
+            WHERE id = ?`,
+            [userId]
+        );
+
+      if (result.affectedRows === 0) {
+          return {
+              success: false,
+              message: 'User not found'
+          };
+      }
+
+      return {
+          success: true,
+          message: 'Logout successful'
+      };
+    } catch (error) {
+      console.error('Logout token version update error:', error);
+
+      return {
+        success: false,
+        message: 'Failed to invalidate session: ' + error.message
+      };
+    } finally {
+      conn.release();
     }
   }
 }
