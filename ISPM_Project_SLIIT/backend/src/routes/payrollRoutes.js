@@ -7,8 +7,8 @@ const { authMiddleware, authorizeRoles } = require('../middlewares/authMiddlewar
 router.use(authMiddleware);
 
 // Salary structures
-router.get('/salary-structures', PayrollController.getAllSalaryStructures);
-router.get('/salary-structure/:employeeId', authorizeRoles('admin'), PayrollController.getSalaryStructure);
+router.get('/salary-structures', authorizeRoles('admin'), PayrollController.getAllSalaryStructures);
+router.get('/salary-structure/:employeeId', authorizeRoles('admin','employee','hr'), PayrollController.getSalaryStructure);
 router.post('/salary-structure', PayrollController.upsertSalaryStructure);
 
 // Payroll generation (must come before /:id)

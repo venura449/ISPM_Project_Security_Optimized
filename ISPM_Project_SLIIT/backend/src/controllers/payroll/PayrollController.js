@@ -34,24 +34,19 @@ class PayrollController {
   // GET /api/payroll/salary-structure/:employeeId
   static async getSalaryStructure(req, res) {
     try {
+      
       const requestedId = req.params.employeeId;
+      const userRole = req.user.type || req.user.userType;
 
-      // IDOR Protection: Ensure employees only query their own ID
-      if (req.user.type === "employee") {
-        const currentEmployee = await Employee.findById(req.user.id);
-
-        if (
-          !currentEmployee ||
-          String(currentEmployee.id) !== String(requestedId)
-        ) {
-          return res.status(403).json({
-            success: false,
-            message:
-              "Forbidden: You are not authorized to access this resource.",
-          });
-        }
+      // IDOR Protection: Compare the internal integer IDs directly
+      if (userRole === "employee" && String(req.user.id) !== String(requestedId)) {
+        return res.status(403).json({
+          success: false,
+          message: "Forbidden: You are not authorized to access this resource.",
+        });
       }
 
+      
       const data = await PayrollModel.getSalaryStructure(requestedId);
       res.json({ success: true, data });
     } catch (err) {
@@ -84,22 +79,16 @@ class PayrollController {
   // GET /api/payroll/employee/:employeeId
   static async getEmployeePayrollHistory(req, res) {
     try {
-      const requestId = req.params.employeeId;
-      const userType = req.user.type;
+      const requestedId = req.params.employeeId;
+      const userRole = req.user.userType || req.user.type;
 
       // IDOR Protection: If the user is an 'employee', they can only request their own ID.
-      if (userType === "employee") {
-        const currentEmployee = await Employee.findById(req.user.id);
-        if (
-          !currentEmployee ||
-          String(currentEmployee.id) !== String(requestId)
-        ) {
+      if (userRole === "employee" && String(req.user.id) !== String(requestedId)) {
           return res.status(403).json({
             success: false,
             message:
               "Forbidden: You are not authorized to access this resource.",
           });
-        }
       }
 
       const data = await PayrollModel.getEmployeePayrollHistory(requestedId);
@@ -113,7 +102,9 @@ class PayrollController {
   // GET /api/payroll/:id
   static async getPayrollRecord(req, res) {
     try {
-      const record = await PayrollModel.getPayrollRecord(req.params.id);
+      const recordId = req.params.id;
+      const userRole = req.user.unserType || req.user.type;
+      const record = await PayrollModel.getPayrollRecord(recordId);
       if (!record) {
         return res
           .status(404)
@@ -121,16 +112,12 @@ class PayrollController {
       }
 
       // IDOR Protection: If the user is an 'employee', they can only request their own ID.
-      if (req.user.type === "employee") {
-        const currentEmployee = await Employee.findById(req.user.id);
-
-        if (!currentEmployee || String(currentEmployee.id) !== String(record.employeeId)) {
+      if (userRole === "employee" && String(req.user.id) !== String(record.employee_id)) {
           return res.status(403).json({
             success: false,
             message:
               "Forbidden: You are not authorized to access this payroll record.",
           });
-        }
       }
       res.json({ success: true, data: record });
     } catch (err) {
