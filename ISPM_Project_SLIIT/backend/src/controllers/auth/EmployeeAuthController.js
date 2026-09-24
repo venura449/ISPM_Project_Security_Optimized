@@ -241,6 +241,14 @@ class EmployeeAuthController {
      */
     static async logout(req, res) {
         try {
+            const result = await EmployeeAuthService.logoutUpdate(req.user.id);
+
+            if (!result.success) {
+                return res.status(400).json({
+                    success: false,
+                    message: result.message
+                });
+            }
             res.clearCookie('token',{
                 httpOnly:true,
                 secure: process.env.NODE_ENV === 'production',

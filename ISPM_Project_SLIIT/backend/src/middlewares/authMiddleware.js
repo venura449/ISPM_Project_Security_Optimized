@@ -1,5 +1,6 @@
 const AuthService = require("../services/auth/AuthService");
 const Employee = require("../models/employee/Employee");
+const User = require("../models/auth/User");
 
 const isEmployeeTokenRevoked = async (decoded) => {
   if (decoded.type !== "employee") {
@@ -43,7 +44,16 @@ const authMiddleware = async (req, res, next) => {
     if (!decoded) {
       return res.status(401).json({
         success: false,
-        message: "Invalid or expired token",
+        message: "Invalid token",
+      });
+    }
+
+    const tokenVersionValid = await verifyTokenVersion(decoded);
+
+    if(!tokenVersionValid){
+      return res.status(401).json({
+        success: false,
+        message: "Session expired. Please log in again.",
       });
     }
 
@@ -116,6 +126,36 @@ const authorizeRoles = (...allowedRoles) => {
     next();
   };
 };
+
+const verifyTokenVersion = async(decoded) => {
+  let account;
+
+  if( decoded.type === "employee" ){
+    account = await Employee.findById(decoded.id);
+  }
+  else if ( decoded.type === "user" || decoded.type === "admin"){
+    account = await User.findById(decoded.id);
+  }
+  else{
+    return false;
+  }
+
+  console.log("tokenVersion: ", decoded.tokenVersion);
+  console.log("token_version:",account.token_version );
+  if( !account ){
+    return false;
+  }
+
+  if(decoded.tokenVersion === null || decoded.tokenVersion === undefined ){
+    return false;
+  }
+
+  if (decoded.tokenVersion !== account.token_version){
+    return false;
+  }
+
+  return true;
+}
 
 module.exports = {
   authMiddleware,
