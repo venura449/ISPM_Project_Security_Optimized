@@ -18,7 +18,7 @@ router.post('/generate', authorizeRoles('admin', 'hr', 'manager'), PayrollContro
 router.get('/employee/:employeeId', PayrollController.getEmployeePayrollHistory);
 
 // Payroll records CRUD
-router.get('/', PayrollController.getPayrollList);
+router.get('/', authorizeRoles('admin', 'hr', 'manager'), PayrollController.getPayrollList);
 router.post('/', PayrollController.createPayrollRecord);
 router.get('/:id', PayrollController.getPayrollRecord);
 router.put('/:id',authorizeRoles('admin', 'hr', 'manager'), PayrollController.updatePayrollRecord);
