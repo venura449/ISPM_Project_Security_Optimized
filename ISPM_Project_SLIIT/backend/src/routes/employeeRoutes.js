@@ -1,7 +1,11 @@
 const express = require('express');
 const EmployeeController = require('../controllers/employee/EmployeeController');
+const { authMiddleware } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
+
+// Apply authentication middleware to all employee endpoints
+router.use(authMiddleware);
 
 // Create a new employee
 router.post('/', EmployeeController.createEmployee);
