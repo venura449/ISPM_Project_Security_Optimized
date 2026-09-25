@@ -290,7 +290,7 @@ class EmployeeAuthService {
 
         return jwt.sign(
             payload,
-            process.env.JWT_SECRET || 'your_jwt_secret_key_change_in_production',
+            process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRY || '7d' }
         );
     }

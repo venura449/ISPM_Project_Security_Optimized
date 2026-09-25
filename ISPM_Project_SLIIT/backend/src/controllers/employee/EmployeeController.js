@@ -3,6 +3,21 @@ const Employee = require('../../models/employee/Employee');
 const EmployeeDocument = require('../../models/employee/EmployeeDocument');
 
 class EmployeeController {
+  static publicEmployee(employee) {
+    if (!employee) return employee;
+    const { password, password_generated_at, temporary_password_expires_at, temporary_password_used_at, must_change_password, ...safe } = employee;
+    return safe;
+  }
+
+  static sanitizeResult(result) {
+    if (!result || typeof result !== 'object') return result;
+    if (Array.isArray(result)) return result.map(EmployeeController.publicEmployee);
+    const copy = { ...result };
+    if (Array.isArray(copy.data)) copy.data = copy.data.map(EmployeeController.publicEmployee);
+    else if (copy.data && typeof copy.data === 'object') copy.data = EmployeeController.publicEmployee(copy.data);
+    if (copy.employee) copy.employee = EmployeeController.publicEmployee(copy.employee);
+    return copy;
+  }
   /**
    * Create a new employee
    * POST /api/employees
@@ -86,7 +101,7 @@ class EmployeeController {
 
       const result = await EmployeeService.getEmployeeProfile(id);
 
-      return res.status(200).json(result);
+      return res.status(200).json(EmployeeController.sanitizeResult(result));
     } catch (err) {
       console.error('Get employee error:', err);
       return res.status(404).json({
@@ -111,7 +126,7 @@ class EmployeeController {
 
       const result = await EmployeeService.getAllEmployees(filters);
 
-      return res.status(200).json(result);
+      return res.status(200).json(EmployeeController.sanitizeResult(result));
     } catch (err) {
       console.error('Get all employees error:', err);
       return res.status(500).json({
@@ -132,7 +147,7 @@ class EmployeeController {
 
       const result = await EmployeeService.updateEmployee(id, updateData);
 
-      return res.status(200).json(result);
+      return res.status(200).json(EmployeeController.sanitizeResult(result));
     } catch (err) {
       console.error('Update employee error:', err);
       return res.status(500).json({
@@ -165,7 +180,7 @@ class EmployeeController {
         role
       );
 
-      return res.status(200).json(result);
+      return res.status(200).json(EmployeeController.sanitizeResult(result));
     } catch (err) {
       console.error('Update status error:', err);
       return res.status(500).json({
@@ -281,7 +296,7 @@ class EmployeeController {
 
       const result = await EmployeeService.getEmployeesByStatus(status);
 
-      return res.status(200).json(result);
+      return res.status(200).json(EmployeeController.sanitizeResult(result));
     } catch (err) {
       console.error('Get by status error:', err);
       return res.status(500).json({

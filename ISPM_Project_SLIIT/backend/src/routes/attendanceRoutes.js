@@ -1,11 +1,11 @@
 const express = require('express');
 const AttendanceController = require('../controllers/workforce/AttendanceController');
-const { authMiddleware } = require('../middlewares/authMiddleware');
+const { authMiddleware, requireAdminUser } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
 // Apply authentication middleware to all routes
-router.use(authMiddleware);
+router.use(authMiddleware, requireAdminUser);
 
 // Get daily attendance sheet
 router.get('/sheet', AttendanceController.getAttendanceSheet);

@@ -228,7 +228,7 @@ class AuthService {
     const userType = user.role;
     return jwt.sign(
       { id: userId, type: userType },
-      process.env.JWT_SECRET || 'your_jwt_secret_key_change_in_production',
+      process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRY || '7d' }
     );
   }
@@ -242,7 +242,7 @@ class AuthService {
     try {
       return jwt.verify(
         token,
-        process.env.JWT_SECRET || 'your_jwt_secret_key_change_in_production'
+        process.env.JWT_SECRET
       );
     } catch (error) {
       console.error('Token verification error:', error.message);
