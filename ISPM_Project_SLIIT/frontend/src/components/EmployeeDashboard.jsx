@@ -1,8 +1,9 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { useApi } from "../hooks/useApi";
+import {useAuth} from "../hooks/useAuth";
 
 
 const Icon = ({ d, className = "w-5 h-5" }) => (
@@ -87,6 +88,7 @@ const getFieldCls = (touched, valid) => {
 
 const EmployeeDashboard = () => {
   const { apiFetch } = useApi();
+  const {logout} = useAuth();
   const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
@@ -151,29 +153,30 @@ const EmployeeDashboard = () => {
 
   const validatePasswordField = (name, val) => {
     if (name === "oldPassword") return val.length > 0;
-    if (name === "newPassword") return val.length >= 6;
+    if (name === "newPassword") {
+      return (
+        val.length >= 8 &&
+        /[a-z]/.test(val) &&
+        /[A-Z]/.test(val) &&
+        /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(val) &&
+        !/(.)\1{3,}/i.test(val)
+      );
+    }
     if (name === "confirmPassword")
-      return val.length >= 6 && val === passwordData.newPassword;
+      return val.length >= 8 && val === passwordData.newPassword;
     return true;
   };
 
   // Check authentication on mount
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userType = localStorage.getItem("userType");
-
-    if (!token || userType !== "employee") {
-      navigate("/employee-login");
-      return;
-    }
 
     loadEmployeeProfile();
     loadLeaveRequests();
-  }, [navigate]);
+  }, []);
 
   const loadEmployeeProfile = async () => {
     try {
-      const response = await apiFetch(`/api/employee-auth/profile`);
+      const response = await apiFetch(`/employee-auth/profile`);
 
       const data = await response.json();
       if (data.success) {
@@ -267,8 +270,8 @@ const EmployeeDashboard = () => {
       return;
     }
 
-    if (passwordData.newPassword.length < 6) {
-      toast.error("New password must be at least 6 characters", {
+    if (passwordData.newPassword.length < 8) {
+      toast.error("New password must be at least 8 characters", {
         position: "top-right",
         autoClose: 3000,
       });
@@ -346,7 +349,7 @@ const EmployeeDashboard = () => {
     setLeaveLoading(true);
     try {
       const response = await apiFetch(
-        `/api/leave/request`,
+        `/leave/request`,
         {
           method: "POST",
           headers: {
@@ -389,7 +392,7 @@ const EmployeeDashboard = () => {
     if (!window.confirm("Delete this leave request?")) return;
     try {
       const response = await apiFetch(
-        `/api/leave/request/${requestId}`,
+        `/leave/request/${requestId}`,
         {
           method: "DELETE",
         },
@@ -415,15 +418,30 @@ const EmployeeDashboard = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userType");
-    localStorage.removeItem("user");
-    toast.success("Logged out successfully!", {
-      position: "top-right",
-      autoClose: 2000,
-    });
-    navigate("/employee-login");
+
+  const handleLogout = async () => {
+    try{
+      const response = await apiFetch(
+        `/employee-auth/logout`,
+        {
+          method : "POST"
+        },
+      );
+
+      if(response){
+        await logout();
+        toast.success("Logged out successfully!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      navigate("/employee-login");
+      }
+    }catch(error) {
+      toast.error("Error: " + error.message, {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
   };
 
   if (loading) {
@@ -1606,8 +1624,7 @@ const EmployeeDashboard = () => {
                       className="w-4 h-4 text-blue-500 shrink-0 mt-0.5"
                     />
                     <p className="text-xs text-blue-600 leading-relaxed">
-                      Minimum 6 characters. Use a mix of letters, numbers, and
-                      special characters for better security.
+                      Minimum 8 characters. Must include at least 1 uppercase letter, 1 lowercase letter, and 1 special character. Cannot use duplicate/repeated characters (e.g., aaaaaaaa).
                     </p>
                   </div>
                 </div>

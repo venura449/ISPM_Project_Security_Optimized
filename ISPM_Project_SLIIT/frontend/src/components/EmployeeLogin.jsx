@@ -4,9 +4,12 @@ import { toast } from "react-toastify";
 
 import {useApi} from "../hooks/useApi";
 
+import {useAuth} from "../hooks/useAuth";
+
 
 const EmployeeLogin = () => {
   const {apiFetch} = useApi();
+  const {setUser} = useAuth();
   const [employeeId, setEmployeeId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -29,7 +32,7 @@ const EmployeeLogin = () => {
 
     try {
       const response = await apiFetch(
-        `/api/employee-auth/login`,
+        `/employee-auth/login`,
         {
           method: "POST",
           headers: {
@@ -47,6 +50,9 @@ const EmployeeLogin = () => {
 
       if (data.success) {
         // Save and user info
+
+
+        setUser({...data.user, type:"employee"});
         localStorage.setItem("userType", "employee");
         localStorage.setItem("user", JSON.stringify(data.user));
 

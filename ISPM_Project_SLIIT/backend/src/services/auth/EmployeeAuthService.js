@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Employee = require('../../models/employee/Employee');
+const { validatePassword } = require('../../utils/passwordValidator');
 require('dotenv').config();
 
 class EmployeeAuthService {
@@ -139,32 +140,43 @@ class EmployeeAuthService {
                         message: "Temporary password has expired. Contact an administrator."
                     };
                 }
+            }
 
-                const connection = require('../../../config/database');
-                const conn = await connection.getConnection();
+            const connection = require('../../../config/database');
+            const conn = await connection.getConnection();
+            let newTokenVersion;
+
+            try {
                 const [result] = await conn.query(
                     `UPDATE employees
-                    SET temporary_password_used_at = NOW()
-                    WHERE id = ?
-                    AND must_change_password = 1
-                    AND temporary_password_used_at IS NULL`,
+                    SET token_version = token_version + 1
+                    WHERE id = ?`,
                     [employee.id]
                 );
 
                 if (result.affectedRows === 0) {
                     return {
                         success: false,
-                        message: "Temporary password has already been used. Contact an administrator."
+                        message: 'Failed to create login session'
                     };
                 }
+                cont [rows] = await conn.query(
+                    `SELECT token_version
+                    FROM employees
+                    WHERE id = ?`,
+                    [employee.id]
+                );
+
+                newTokenVersion = rows[0].token_version;
+            } finally {
+                conn.release();
             }
-
-
-            // Generate token
+            // Generate JWT using the NEW database version
             const token = this.generateToken(
                 employee.id,
                 'employee',
-                employee.password_generated_at
+                employee.password_generated_at,
+                newTokenVersion
             );
 
             return {
@@ -181,7 +193,8 @@ class EmployeeAuthService {
                     designation: employee.designation,
                     status: employee.status,
                     salary: employee.salary,
-                    address: employee.address
+                    address: employee.address,
+                    tokenVersion: employee.token_version,
                 },
                 token,
                 userType: 'employee'
@@ -211,10 +224,11 @@ class EmployeeAuthService {
                 };
             }
 
-            if (newPassword.length < 6) {
+            const passwordValidation = validatePassword(newPassword);
+            if (!passwordValidation.isValid) {
                 return {
                     success: false,
-                    message: 'New password must be at least 6 characters long'
+                    message: passwordValidation.message
                 };
             }
 
@@ -281,8 +295,8 @@ class EmployeeAuthService {
      * @param {Date|string|null} passwordVersion - Current password version
      * @returns {string} JWT token
      */
-    static generateToken(userId, userType = 'employee', passwordVersion = null) {
-        const payload = { id: userId, type: userType };
+    static generateToken(userId, userType = 'employee', passwordVersion = null, tokenVersion = 1) {
+        const payload = { id: userId, type: userType, tokenVersion: tokenVersion };
 
         if (passwordVersion) {
             payload.passwordVersion = new Date(passwordVersion).toISOString();
@@ -349,6 +363,61 @@ class EmployeeAuthService {
             };
         }
     }
+
+    /**
+        * Verify JWT token
+       * @param {string} token - JWT token
+       * @returns {Object|null} Decoded token or null if invalid
+    */
+    static verifyToken(token) {
+        try {
+          return jwt.verify(
+            token,
+            process.env.JWT_SECRET || 'your_jwt_secret_key_change_in_production'
+          );
+        } catch (error) {
+          console.error('Token verification error:', error.message);
+          return null;
+        }
+    }
+
+    /**
+     * Remove token version
+    */
+   static async logoutUpdate(userId) {
+        const connection = require('../../../config/database');
+        const conn = await connection.getConnection();
+
+        try {
+            const [result] = await conn.query(
+                `UPDATE employees
+                SET token_version = token_version + 1
+                WHERE id = ?`,
+                [userId]
+            );
+
+            if (result.affectedRows === 0) {
+                return {
+                    success: false,
+                    message: 'Employee not found'
+                };
+            }
+
+            return {
+                success: true,
+                message: 'Logout successful'
+            };
+        } catch (error) {
+            console.error('Logout token version update error:', error);
+
+            return {
+                success: false,
+                message: 'Failed to invalidate session: ' + error.message
+            };
+        } finally {
+            conn.release();
+        }
+   }
 }
 
 module.exports = EmployeeAuthService;

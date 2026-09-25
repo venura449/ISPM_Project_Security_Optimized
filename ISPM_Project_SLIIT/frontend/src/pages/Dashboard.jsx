@@ -696,7 +696,13 @@ export const Dashboard = () => {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await apiFetch(
+        `/auth/logout`,
+        {
+          method : "POST"
+        },
+      );
     logout();
     toast.info("Logged out successfully", {
       position: "top-right",
