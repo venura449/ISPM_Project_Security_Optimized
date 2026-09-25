@@ -1,7 +1,9 @@
 const express = require('express');
 const EmployeeController = require('../controllers/employee/EmployeeController');
+const { authMiddleware, requireAdminUser } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
+router.use(authMiddleware, requireAdminUser);
 
 // Create a new employee
 router.post('/', EmployeeController.createEmployee);

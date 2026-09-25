@@ -61,7 +61,7 @@ class AuthService {
           name: 'Developer',
           email,
           password: hashedPassword,
-          role 
+          role
         });
 
         console.log(`Default developer account created: ${user.email}`);
@@ -199,13 +199,13 @@ class AuthService {
       const conn = await connection.getConnection();
       let newTokenVersion;
 
-      try{
+      try {
         const [result] = await conn.query(
           `UPDATE employees
           SET token_version = token_version + 1
           WHERE id = ?`,
           [user.id]
-       );
+        );
 
         if (result.affectedRows === 0) {
           return {
@@ -225,7 +225,7 @@ class AuthService {
         conn.release();
       }
       // Generate token
-      const token = await this.generateToken(user.id,newTokenVersion);
+      const token = await this.generateToken(user.id, newTokenVersion);
 
       return {
         success: true,
@@ -254,13 +254,13 @@ class AuthService {
    * @param {number} userId - User ID
    * @returns {string} JWT token
    */
-  static async generateToken(userId,newTokenVersion) {
+  static async generateToken(userId, newTokenVersion) {
     const user = await User.findById(userId);
     const userType = user.role;
     const tokenVersion = user.token_version;
     return jwt.sign(
-      { id: userId, type: userType, tokenVersion: newTokenVersion },
-      process.env.JWT_SECRET || 'your_jwt_secret_key_change_in_production',
+      { id: userId, type: userType },
+      process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRY || '7d' }
     );
   }
@@ -274,7 +274,7 @@ class AuthService {
     try {
       return jwt.verify(
         token,
-        process.env.JWT_SECRET || 'your_jwt_secret_key_change_in_production'
+        process.env.JWT_SECRET
       );
     } catch (error) {
       console.error('Token verification error:', error.message);
@@ -306,7 +306,7 @@ class AuthService {
   static async updateUserProfile(userId, updateData) {
     try {
       const updatedUser = await User.updateProfile(userId, updateData);
-      
+
       return {
         success: true,
         message: 'Profile updated successfully',
@@ -386,27 +386,27 @@ class AuthService {
     * Remove token version
   */
   static async logoutUpdate(userId) {
-     const connection = require('../../../config/database');
+    const connection = require('../../../config/database');
     const conn = await connection.getConnection();
 
     try {
-        const [result] = await conn.query(
-            `UPDATE users
+      const [result] = await conn.query(
+        `UPDATE users
             SET token_version = token_version + 1
             WHERE id = ?`,
-            [userId]
-        );
+        [userId]
+      );
 
       if (result.affectedRows === 0) {
-          return {
-              success: false,
-              message: 'User not found'
-          };
+        return {
+          success: false,
+          message: 'User not found'
+        };
       }
 
       return {
-          success: true,
-          message: 'Logout successful'
+        success: true,
+        message: 'Logout successful'
       };
     } catch (error) {
       console.error('Logout token version update error:', error);

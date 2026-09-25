@@ -1,10 +1,10 @@
 const express = require('express');
 const SettingsController = require('../controllers/settings/SettingsController');
-const { authMiddleware } = require('../middlewares/authMiddleware');
+const { authMiddleware, requireAdminUser } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
-router.use(authMiddleware);
+router.use(authMiddleware, requireAdminUser);
 
 router.get('/', SettingsController.getAll);
 router.put('/', SettingsController.updateSettings);
