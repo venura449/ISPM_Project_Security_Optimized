@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 
+import { useApi } from "../hooks/useApi";
+
+
 const ProfileEditModal = ({ user, onClose, onUpdate }) => {
+  const { apiFetch } = useApi();
   const [loading, setLoading] = useState(false);
   const [nameError, setNameError] = useState("");
   const [phoneError, setPhoneError] = useState("");
@@ -79,12 +83,11 @@ const ProfileEditModal = ({ user, onClose, onUpdate }) => {
 
     setLoading(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/auth/profile`,
+      const response = await apiFetch(
+        `/api/auth/profile`,
         {
           method: "PUT",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({

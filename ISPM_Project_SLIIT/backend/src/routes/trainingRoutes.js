@@ -1,11 +1,12 @@
 const express = require('express');
 const TrainingController = require('../controllers/workforce/TrainingController');
+const { authMiddleware } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
 // Training Programs
 router.post('/programs', TrainingController.createProgram);
-router.get('/programs', TrainingController.getAllPrograms);
+router.get('/programs', authMiddleware,TrainingController.getAllPrograms);
 router.get('/programs/:programId', TrainingController.getProgramDetails);
 router.put('/programs/:programId', TrainingController.updateProgram);
 router.delete('/programs/:programId', TrainingController.deleteProgram);

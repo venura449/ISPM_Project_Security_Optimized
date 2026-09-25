@@ -1,14 +1,18 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
+import { useApi } from "../hooks/useApi";
+import {useAuth} from "../hooks/useAuth";
+
+
 const Icon = ({ d, className = "w-5 h-5" }) => (
   <svg
-    className={className}
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-    strokeWidth={2}
+  className={className}
+  fill="none"
+  viewBox="0 0 24 24"
+  stroke="currentColor"
+  strokeWidth={2}
   >
     <path strokeLinecap="round" strokeLinejoin="round" d={d} />
   </svg>
@@ -38,22 +42,22 @@ const NAV = [
 ];
 
 const inputCls =
-  "flex items-center gap-3 border border-gray-200 rounded-xl px-4 transition-all duration-200 focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-50 hover:border-gray-300";
+"flex items-center gap-3 border border-gray-200 rounded-xl px-4 transition-all duration-200 focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-50 hover:border-gray-300";
 const textInputCls =
-  "w-full py-3 text-sm text-gray-700 bg-transparent outline-none placeholder-gray-400 disabled:opacity-50";
+"w-full py-3 text-sm text-gray-700 bg-transparent outline-none placeholder-gray-400 disabled:opacity-50";
 
 const dateInputCls =
-  "min-w-0 flex-1 py-3 text-sm text-gray-700 bg-white outline-none disabled:opacity-50 [color-scheme:light]";
+"min-w-0 flex-1 py-3 text-sm text-gray-700 bg-white outline-none disabled:opacity-50 [color-scheme:light]";
 
 const ValidationIcon = ({ valid }) =>
   valid ? (
     <svg
-      className="w-4 h-4 text-green-500 shrink-0"
-      fill="none"
+    className="w-4 h-4 text-green-500 shrink-0"
+    fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
       strokeWidth={2}
-    >
+      >
       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
     </svg>
   ) : (
@@ -63,19 +67,19 @@ const ValidationIcon = ({ valid }) =>
       viewBox="0 0 24 24"
       stroke="currentColor"
       strokeWidth={2}
-    >
+      >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
         d="M6 18L18 6M6 6l12 12"
-      />
+        />
     </svg>
   );
-
+  
 const getFieldCls = (touched, valid) => {
   const base =
     "flex items-center gap-3 border rounded-xl px-4 transition-all duration-200 hover:border-gray-300";
-  if (!touched)
+    if (!touched)
     return `${base} border-gray-200 focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-50`;
   if (valid)
     return `${base} border-green-400 focus-within:border-green-400 focus-within:ring-4 focus-within:ring-green-50`;
@@ -83,6 +87,8 @@ const getFieldCls = (touched, valid) => {
 };
 
 const EmployeeDashboard = () => {
+  const { apiFetch } = useApi();
+  const {logout} = useAuth();
   const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
@@ -147,36 +153,30 @@ const EmployeeDashboard = () => {
 
   const validatePasswordField = (name, val) => {
     if (name === "oldPassword") return val.length > 0;
-    if (name === "newPassword") return val.length >= 6;
+    if (name === "newPassword") {
+      return (
+        val.length >= 8 &&
+        /[a-z]/.test(val) &&
+        /[A-Z]/.test(val) &&
+        /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(val) &&
+        !/(.)\1{3,}/i.test(val)
+      );
+    }
     if (name === "confirmPassword")
-      return val.length >= 6 && val === passwordData.newPassword;
+      return val.length >= 8 && val === passwordData.newPassword;
     return true;
   };
 
   // Check authentication on mount
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userType = localStorage.getItem("userType");
-
-    if (!token || userType !== "employee") {
-      navigate("/employee-login");
-      return;
-    }
 
     loadEmployeeProfile();
     loadLeaveRequests();
-  }, [navigate]);
+  }, []);
 
   const loadEmployeeProfile = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/employee-auth/profile`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        },
-      );
+      const response = await apiFetch(`/employee-auth/profile`);
 
       const data = await response.json();
       if (data.success) {
@@ -219,17 +219,13 @@ const EmployeeDashboard = () => {
 
   const updateProfile = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/employee-auth/profile`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
+      const response = await apiFetch(`/employee-auth/profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(formData),
+      });
 
       const data = await response.json();
       if (data.success) {
@@ -274,8 +270,8 @@ const EmployeeDashboard = () => {
       return;
     }
 
-    if (passwordData.newPassword.length < 6) {
-      toast.error("New password must be at least 6 characters", {
+    if (passwordData.newPassword.length < 8) {
+      toast.error("New password must be at least 8 characters", {
         position: "top-right",
         autoClose: 3000,
       });
@@ -283,12 +279,10 @@ const EmployeeDashboard = () => {
     }
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/employee-auth/change-password`,
+      const response = await apiFetch(`/employee-auth/change-password`,
         {
           method: "PUT",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
@@ -326,12 +320,7 @@ const EmployeeDashboard = () => {
   const loadLeaveRequests = async () => {
     setLeaveLoading(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/leave/my-requests`,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        },
-      );
+      const response = await apiFetch(`/leave/my-requests`);
       const data = await response.json();
       if (data.success) setLeaveRequests(data.data || []);
     } catch (error) {
@@ -359,12 +348,11 @@ const EmployeeDashboard = () => {
     }
     setLeaveLoading(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/leave/request`,
+      const response = await apiFetch(
+        `/leave/request`,
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(leaveForm),
@@ -403,11 +391,10 @@ const EmployeeDashboard = () => {
   const cancelLeaveRequest = async (requestId) => {
     if (!window.confirm("Delete this leave request?")) return;
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/leave/request/${requestId}`,
+      const response = await apiFetch(
+        `/leave/request/${requestId}`,
         {
           method: "DELETE",
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         },
       );
       const data = await response.json();
@@ -431,15 +418,30 @@ const EmployeeDashboard = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userType");
-    localStorage.removeItem("user");
-    toast.success("Logged out successfully!", {
-      position: "top-right",
-      autoClose: 2000,
-    });
-    navigate("/employee-login");
+
+  const handleLogout = async () => {
+    try{
+      const response = await apiFetch(
+        `/employee-auth/logout`,
+        {
+          method : "POST"
+        },
+      );
+
+      if(response){
+        await logout();
+        toast.success("Logged out successfully!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      navigate("/employee-login");
+      }
+    }catch(error) {
+      toast.error("Error: " + error.message, {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
   };
 
   if (loading) {
@@ -1622,8 +1624,7 @@ const EmployeeDashboard = () => {
                       className="w-4 h-4 text-blue-500 shrink-0 mt-0.5"
                     />
                     <p className="text-xs text-blue-600 leading-relaxed">
-                      Minimum 6 characters. Use a mix of letters, numbers, and
-                      special characters for better security.
+                      Minimum 8 characters. Must include at least 1 uppercase letter, 1 lowercase letter, and 1 special character. Cannot use duplicate/repeated characters (e.g., aaaaaaaa).
                     </p>
                   </div>
                 </div>

@@ -47,18 +47,18 @@ CREATE TABLE `attendance` (
 
 INSERT INTO `attendance` (`id`, `employee_id`, `attendance_date`, `status`, `check_in_time`, `check_out_time`, `notes`, `marked_by`, `marked_at`, `created_at`, `updated_at`) VALUES
 (1, 1, '2026-03-04', 'Leave', NULL, NULL, 'Auto-marked from approved leave request #1', 7, '2026-03-03 15:07:02', '2026-03-03 15:07:02', '2026-03-03 15:07:02'),
-(2, 1, '2026-03-03', 'Present', NULL, NULL, NULL, 7, '2026-03-03 16:27:08', '2026-03-03 16:27:08', '2026-03-03 16:27:08'),
-(3, 2, '2026-03-03', 'Absent', NULL, NULL, NULL, 7, '2026-03-03 16:27:12', '2026-03-03 16:27:12', '2026-03-03 16:31:45'),
-(4, 3, '2026-03-03', 'Present', NULL, NULL, NULL, 7, '2026-03-03 16:27:15', '2026-03-03 16:27:15', '2026-03-03 16:31:46'),
-(5, 4, '2026-03-03', 'Absent', NULL, NULL, NULL, 7, '2026-03-03 16:27:16', '2026-03-03 16:27:16', '2026-03-03 16:27:16'),
-(6, 5, '2026-03-03', 'Present', NULL, NULL, NULL, 7, '2026-03-03 16:27:17', '2026-03-03 16:27:17', '2026-03-03 16:27:17'),
-(7, 6, '2026-03-03', 'Present', NULL, NULL, NULL, 7, '2026-03-03 16:27:18', '2026-03-03 16:27:18', '2026-03-03 16:31:50'),
-(8, 1, '2026-03-02', 'Present', NULL, NULL, NULL, 7, '2026-03-03 16:37:02', '2026-03-03 16:37:02', '2026-03-03 16:37:02'),
-(9, 2, '2026-03-02', 'Present', NULL, NULL, NULL, 7, '2026-03-03 16:37:03', '2026-03-03 16:37:03', '2026-03-03 16:37:03'),
-(10, 3, '2026-03-02', 'Present', NULL, NULL, NULL, 7, '2026-03-03 16:37:04', '2026-03-03 16:37:04', '2026-03-03 16:37:04'),
-(11, 4, '2026-03-02', 'Present', NULL, NULL, NULL, 7, '2026-03-03 16:37:05', '2026-03-03 16:37:05', '2026-03-03 16:37:05'),
-(12, 5, '2026-03-02', 'Present', NULL, NULL, NULL, 7, '2026-03-03 16:37:06', '2026-03-03 16:37:06', '2026-03-03 16:37:06'),
-(13, 6, '2026-03-02', 'Present', NULL, NULL, NULL, 7, '2026-03-03 16:37:07', '2026-03-03 16:37:07', '2026-03-03 16:37:07'),
+(2, 1, '2026-03-03', 'Present', NULL, NULL, NULL, 5, '2026-03-03 16:27:08', '2026-03-03 16:27:08', '2026-03-03 16:27:08'),
+(3, 2, '2026-03-03', 'Absent', NULL, NULL, NULL, 5, '2026-03-03 16:27:12', '2026-03-03 16:27:12', '2026-03-03 16:31:45'),
+(4, 3, '2026-03-03', 'Present', NULL, NULL, NULL, 5, '2026-03-03 16:27:15', '2026-03-03 16:27:15', '2026-03-03 16:31:46'),
+(5, 4, '2026-03-03', 'Absent', NULL, NULL, NULL, 5, '2026-03-03 16:27:16', '2026-03-03 16:27:16', '2026-03-03 16:27:16'),
+(6, 5, '2026-03-03', 'Present', NULL, NULL, NULL, 5, '2026-03-03 16:27:17', '2026-03-03 16:27:17', '2026-03-03 16:27:17'),
+(7, 6, '2026-03-03', 'Present', NULL, NULL, NULL, 5, '2026-03-03 16:27:18', '2026-03-03 16:27:18', '2026-03-03 16:31:50'),
+(8, 1, '2026-03-02', 'Present', NULL, NULL, NULL, 5, '2026-03-03 16:37:02', '2026-03-03 16:37:02', '2026-03-03 16:37:02'),
+(9, 2, '2026-03-02', 'Present', NULL, NULL, NULL, 5, '2026-03-03 16:37:03', '2026-03-03 16:37:03', '2026-03-03 16:37:03'),
+(10, 3, '2026-03-02', 'Present', NULL, NULL, NULL, 5, '2026-03-03 16:37:04', '2026-03-03 16:37:04', '2026-03-03 16:37:04'),
+(11, 4, '2026-03-02', 'Present', NULL, NULL, NULL, 5, '2026-03-03 16:37:05', '2026-03-03 16:37:05', '2026-03-03 16:37:05'),
+(12, 5, '2026-03-02', 'Present', NULL, NULL, NULL, 5, '2026-03-03 16:37:06', '2026-03-03 16:37:06', '2026-03-03 16:37:06'),
+(13, 6, '2026-03-02', 'Present', NULL, NULL, NULL, 5, '2026-03-03 16:37:07', '2026-03-03 16:37:07', '2026-03-03 16:37:07'),
 (14, 6, '2026-03-05', 'Leave', NULL, NULL, 'Auto-marked from approved leave request #2', 6, '2026-03-04 04:31:42', '2026-03-04 04:31:42', '2026-03-04 04:31:42'),
 (15, 6, '2026-03-06', 'Leave', NULL, NULL, 'Auto-marked from approved leave request #2', 6, '2026-03-04 04:31:42', '2026-03-04 04:31:42', '2026-03-04 04:31:42'),
 (16, 7, '2026-03-04', 'Present', NULL, NULL, NULL, 6, '2026-03-04 04:34:27', '2026-03-04 04:34:27', '2026-03-04 04:34:27'),
@@ -309,12 +309,12 @@ CREATE TABLE `employees` (
 --
 
 INSERT INTO `employees` (`id`, `user_id`, `employee_id`, `name`, `email`, `phone`, `address`, `department`, `position`, `status`, `joining_date`, `probation_end_date`, `resignation_date`, `salary`, `designation`, `manager_id`, `notes`, `password`, `password_generated_at`, `created_at`, `updated_at`) VALUES
-(1, 1, 'EMP001', 'John Doe', 'john.doe@company.com', '0771234567', '123 Main St', 'IT', 'Software Engineer', 'Permanent', '2024-01-15', '2024-04-15', NULL, 75000.00, 'Senior Developer', NULL, NULL, '$2a$10$TClxX7DWvGqk9ukXxl1wJu/cCZ9oJaTy29HyP/bcCowV7xarT4Qzy', '2026-03-03 14:28:38', '2026-03-03 14:12:46', '2026-03-03 14:28:38'),
+(1, 1, 'EMP001', 'John Doe', 'john.doe@company.com', '0771234567', '123 Main St', 'IT', 'Software Engineer', 'Permanent', '2024-01-15', '2024-04-15', NULL, 75000.00, 'Senior Developer', NULL, NULL, NULL, '2026-03-03 14:28:38', '2026-03-03 14:12:46', '2026-03-03 14:28:38'),
 (2, 2, 'EMP002', 'Jane Smith', 'jane.smith@company.com', '0772345678', '456 Oak Ave', 'HR', 'HR Manager', 'Permanent', '2023-06-01', '2023-09-01', NULL, 65000.00, 'Manager', NULL, NULL, NULL, NULL, '2026-03-03 14:12:46', '2026-03-03 14:12:46'),
 (3, 3, 'EMP003', 'Michael Johnson', 'michael.johnson@company.com', '0773456789', '789 Pine Rd', 'Finance', 'Accountant', 'Probation', '2025-11-01', '2026-02-01', NULL, 45000.00, 'Accountant', NULL, NULL, NULL, NULL, '2026-03-03 14:12:46', '2026-03-03 14:12:46'),
 (4, 4, 'EMP004', 'Sarah Williams', 'sarah.williams@company.com', '0774567890', '321 Elm St', 'IT', 'QA Engineer', 'Permanent', '2024-03-15', '2024-06-15', NULL, 55000.00, 'QA Lead', NULL, NULL, NULL, NULL, '2026-03-03 14:12:46', '2026-03-03 14:12:46'),
 (5, 5, 'EMP005', 'Robert Brown', 'robert.brown@company.com', '0775678901', '654 Maple Dr', 'Operations', 'Operations Officer', 'Permanent', '2023-09-01', '2023-12-01', NULL, 52000.00, 'Officer', NULL, NULL, NULL, NULL, '2026-03-03 14:12:46', '2026-03-03 14:12:46'),
-(6, 6, 'EMP006', 'Emily Davis', 'emily.davis@company.com', '0763472790', 'No 48,Samarahena Rd,aluthgama,Bandaragama', 'IT', 'Frontend Developer', 'Probation', '2025-12-01', '2026-03-01', NULL, 38000.00, 'Developer', NULL, '', '$2a$10$f92lpmfo5Rx63znYSL0KGOsjCRuAWLG7kcwnYLzPgyk/zGFLKaSKK', '2026-03-04 13:28:24', '2026-03-03 14:12:46', '2026-03-04 13:28:24'),
+(6, 6, 'EMP006', 'Emily Davis', 'emily.davis@company.com', '0763472790', 'No 48,Samarahena Rd,aluthgama,Bandaragama', 'IT', 'Frontend Developer', 'Probation', '2025-12-01', '2026-03-01', NULL, 38000.00, 'Developer', NULL, '', NULL, '2026-03-04 13:28:24', '2026-03-03 14:12:46', '2026-03-04 13:28:24'),
 (7, NULL, 'EMP009', 'Heylli', 'h@gmail.com', '0763472790', 'No 49,Samarahena Rd,Aluthgama,Bandaragama', 'Finance', 'Senior Associate', 'Probation', '2026-01-27', '2026-03-19', NULL, 50000.00, 'Software Enginner', NULL, '', NULL, NULL, '2026-03-04 04:29:48', '2026-03-04 04:29:48'),
 (8, NULL, 'EMP010', 'Sakuni', 'sakuni@gmail.com', '0763472790', 'No 49,Samarahena Rd,Aluthgama,Bandaragama', 'IT', 'Junior Associate', 'Permanent', '2007-06-01', '2007-07-01', NULL, 50000.00, 'Software Enginner', NULL, '', NULL, NULL, '2026-03-04 09:11:55', '2026-03-04 09:11:55'),
 (9, NULL, 'EMP011', 'Samara', 'samara@gmail.com', '0763472790', 'No 49,Samarahena Rd,Aluthgama,Bandaragama', 'Human Resources', 'Senior Associate', 'Permanent', '2025-06-01', '2025-07-10', NULL, 50000.00, 'Developer', NULL, '', NULL, NULL, '2026-03-04 09:13:25', '2026-03-04 09:13:25'),
@@ -578,7 +578,7 @@ INSERT INTO `training_assignments` (`id`, `program_id`, `employee_id`, `assigned
 (2, 3, 4, NULL, '2026-03-04', 'Assigned', 'Pending', NULL, '2026-03-04 04:33:37', '2026-03-04 04:33:37'),
 (3, 3, 2, NULL, '2026-03-04', 'Assigned', 'Pending', NULL, '2026-03-04 04:33:37', '2026-03-04 04:33:37'),
 (4, 5, 8, NULL, '2026-03-04', 'Assigned', 'Pending', NULL, '2026-03-04 11:26:20', '2026-03-04 11:26:20'),
-(5, 5, 7, NULL, '2026-03-04', 'Assigned', 'Pending', NULL, '2026-03-04 11:26:25', '2026-03-04 11:26:25');
+(5, 5, 6, NULL, '2026-03-04', 'Assigned', 'Pending', NULL, '2026-03-04 11:26:25', '2026-03-04 11:26:25');
 
 -- --------------------------------------------------------
 
@@ -665,7 +665,7 @@ CREATE TABLE `users` (
   `id` int NOT NULL,
   `name` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `password` varchar(255) NOT NULL,
+  `password` varchar(255) NULL,
   `phone` varchar(20) DEFAULT NULL,
   `address` varchar(255) DEFAULT NULL,
   `profile_picture` varchar(255) DEFAULT NULL,
@@ -678,13 +678,13 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `phone`, `address`, `profile_picture`, `created_at`, `updated_at`) VALUES
-(1, 'John Doe', 'john.doe@company.com', '$2b$10$example_hash', '0771234567', '123 Main St', NULL, '2026-03-03 14:12:46', '2026-03-03 14:12:46'),
-(2, 'Jane Smith', 'jane.smith@company.com', '$2b$10$example_hash', '0772345678', '456 Oak Ave', NULL, '2026-03-03 14:12:46', '2026-03-03 14:12:46'),
-(3, 'Michael Johnson', 'michael.johnson@company.com', '$2b$10$example_hash', '0773456789', '789 Pine Rd', NULL, '2026-03-03 14:12:46', '2026-03-03 14:12:46'),
-(4, 'Sarah Williams', 'sarah.williams@company.com', '$2b$10$example_hash', '0774567890', '321 Elm St', NULL, '2026-03-03 14:12:46', '2026-03-03 14:12:46'),
-(5, 'Robert Brown', 'robert.brown@company.com', '$2b$10$example_hash', '0775678901', '654 Maple Dr', NULL, '2026-03-03 14:12:46', '2026-03-03 14:12:46'),
-(6, 'Emily Davis', 'emily.davis@company.com', '$2b$10$example_hash', '0776789012', '987 Cedar Ln', NULL, '2026-03-03 14:12:46', '2026-03-03 14:12:46'),
-(7, 'Gayasha', 'gaya@gmail.com', '$2a$10$zXOXYnlbL7sBmOkfQo6ChOqt8QgsTCQvdCjwBceo5geg3LUdgfESG', NULL, NULL, NULL, '2026-03-03 14:16:40', '2026-03-03 14:16:40');
+(1, 'John Doe', 'john.doe@company.com', NULL, '0771234567', '123 Main St', NULL, '2026-03-03 14:12:46', '2026-03-03 14:12:46'),
+(2, 'Jane Smith', 'jane.smith@company.com', NULL, '0772345678', '456 Oak Ave', NULL, '2026-03-03 14:12:46', '2026-03-03 14:12:46'),
+(3, 'Michael Johnson', 'michael.johnson@company.com', NULL, '0773456789', '789 Pine Rd', NULL, '2026-03-03 14:12:46', '2026-03-03 14:12:46'),
+(4, 'Sarah Williams', 'sarah.williams@company.com', NULL, '0774567890', '321 Elm St', NULL, '2026-03-03 14:12:46', '2026-03-03 14:12:46'),
+(5, 'Robert Brown', 'robert.brown@company.com', NULL, '0775678901', '654 Maple Dr', NULL, '2026-03-03 14:12:46', '2026-03-03 14:12:46'),
+(6, 'Emily Davis', 'emily.davis@company.com', NULL, '0776789012', '987 Cedar Ln', NULL, '2026-03-03 14:12:46', '2026-03-03 14:12:46'),
+(7, 'Gayasha', 'gaya1@gmail.com', NULL, NULL, NULL, NULL, '2026-03-03 14:16:40', '2026-03-03 14:16:40');
 
 --
 -- Indexes for dumped tables
@@ -997,6 +997,36 @@ ALTER TABLE `training_sessions`
   ADD CONSTRAINT `training_sessions_ibfk_2` FOREIGN KEY (`facilitator_id`) REFERENCES `employees` (`id`) ON DELETE SET NULL;
 COMMIT;
 
+
+--
+-- Add password constraint
+--
+ALTER TABLE `employees`
+  ADD COLUMN `must_change_password` TINYINT(1) NOT NULL DEFAULT 0,
+  ADD COLUMN `temporary_password_expires_at` DATETIME NULL,
+  ADD COLUMN `temporary_password_used_at` DATETIME NULL;
+
+--
+-- Add user roles
+--
+ALTER TABLE `users`
+  ADD COLUMN `role` enum( 'admin', 'user') NOT NULL DEFAULT 'user';
+
+--
+-- Update default user role
+--
+UPDATE `users`
+SET `role` = 'admin'
+WHERE `email` = 'gaya@gmail.com';
+
+--
+-- Add token version
+--
+ALTER TABLE `employees`
+  ADD COLUMN `token_version` int NOT NULL DEFAULT 1;
+
+ALTER TABLE `users`
+  ADD COLUMN `token_version` int NOT NULL DEFAULT 1;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

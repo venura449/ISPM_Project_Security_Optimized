@@ -28,7 +28,7 @@ class User {
     const connection = await pool.getConnection();
     try {
       const [rows] = await connection.query(
-        'SELECT id, name, email, phone, address, profile_picture, created_at, updated_at FROM users WHERE id = ?',
+        'SELECT id, name, email, phone, address, profile_picture, role, created_at, updated_at FROM users WHERE id = ?',
         [id]
       );
       return rows.length > 0 ? rows[0] : null;
@@ -45,7 +45,7 @@ class User {
   static async create(userData) {
     const connection = await pool.getConnection();
     try {
-      const { name, email, password } = userData;
+      const { name, email, password = null } = userData;
       const [result] = await connection.query(
         'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
         [name, email, password]
@@ -59,6 +59,10 @@ class User {
     } finally {
       connection.release();
     }
+  }
+
+  static async createOAuthUser({ name, email }) {
+    return this.create({ name, email, password: null });
   }
 
   /**

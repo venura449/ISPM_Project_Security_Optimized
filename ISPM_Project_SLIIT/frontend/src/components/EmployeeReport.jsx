@@ -17,6 +17,9 @@ import {
   CartesianGrid,
 } from "recharts";
 
+import {useApi} from "../hooks/useApi";
+
+
 const MONTHS = [
   "Jan",
   "Feb",
@@ -64,27 +67,22 @@ const LEAVE_TYPE_COLORS = {
   Unpaid: "bg-gray-100 text-gray-600",
 };
 
-const token = () => localStorage.getItem("token");
 
-const api = (path) =>
-  fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}${path}`, {
-    headers: { Authorization: `Bearer ${token()}` },
-  }).then((r) => r.json());
 
 const fmt = (d) =>
   d
     ? new Date(d).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      })
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    })
     : "—";
-
-// ── Donut centre label ────────────────────────────────────────────────────────
-const DonutLabel = ({ viewBox, value, label }) => {
-  const { cx, cy } = viewBox;
-  return (
-    <g>
+    
+    // ── Donut centre label ────────────────────────────────────────────────────────
+    const DonutLabel = ({ viewBox, value, label }) => {
+      const { cx, cy } = viewBox;
+      return (
+        <g>
       <text
         x={cx}
         y={cy - 6}
@@ -119,6 +117,7 @@ const StatCard = ({ label, value, bg, text, border }) => (
 );
 
 export default function EmployeeReport() {
+  const {apiFetch} = useApi();
   const now = new Date();
   const [employees, setEmployees] = useState([]);
   const [search, setSearch] = useState("");
@@ -132,11 +131,16 @@ export default function EmployeeReport() {
   const [trend, setTrend] = useState([]);
   const [loadingReport, setLoadingReport] = useState(false);
 
+  const api = async (path)=>{
+    const res = await apiFetch(path);
+    return res.json();
+  };
+
   useEffect(() => {
-    api("/api/employees").then((d) => {
+    api("/employees").then((d) => {
       if (d.success || Array.isArray(d.data)) setEmployees(d.data || []);
     });
-  }, []);
+  }, [apiFetch]);
 
   useEffect(() => {
     if (!selectedEmp) return;
@@ -147,14 +151,14 @@ export default function EmployeeReport() {
     setLoadingReport(true);
     try {
       const [rpt, bal, hist, trendData] = await Promise.all([
-        api(`/api/attendance/report/${emp.id}?month=${m}&year=${y}`),
-        api(`/api/leave/balance/${emp.id}?year=${y}`),
-        api(`/api/leave/employee/${emp.id}`),
+        api(`/attendance/report/${emp.id}?month=${m}&year=${y}`),
+        api(`/leave/balance/${emp.id}?year=${y}`),
+        api(`/leave/employee/${emp.id}`),
         Promise.all(
           Array.from({ length: 6 }, (_, i) => {
             const d = new Date(y, m - 1 - i, 1);
             return api(
-              `/api/attendance/report/${emp.id}?month=${d.getMonth() + 1}&year=${d.getFullYear()}`,
+              `/attendance/report/${emp.id}?month=${d.getMonth() + 1}&year=${d.getFullYear()}`,
             ).then((r) => ({
               month: MONTHS[d.getMonth()],
               present: Number(r.data?.present) || 0,

@@ -25,11 +25,32 @@ function AppContent() {
     );
   }
 
+  const isEmployee = localStorage.getItem("userType") === "employee";
+  const isAdmin = localStorage.getItem("userType") === "admin";
+
   return (
     <Routes>
       {/* Employee Portal Routes */}
-      <Route path="/employee-login" element={<EmployeeLogin />} />
-      <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
+      <Route
+        path="/employee-login"
+        element={
+          isAuthenticated && isEmployee ? (
+            <Navigate to="/employee-dashboard" />
+          ) : (
+            <EmployeeLogin />
+          )
+        }
+      />
+      <Route
+        path="/employee-dashboard"
+        element={
+          isAuthenticated && isEmployee ? (
+            <EmployeeDashboard />
+          ) : (
+            <Navigate to="/employee-login" />
+          )
+        }
+      />
 
       {/* Admin Portal Routes */}
       <Route

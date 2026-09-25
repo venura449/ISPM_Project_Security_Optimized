@@ -4,7 +4,11 @@ import AddEmployeeForm from "./AddEmployeeForm";
 import EmployeeList from "./EmployeeList";
 import EmployeeProfile from "./EmployeeProfile";
 
+import {useApi} from "../hooks/useApi";
+
+
 const EmployeeManagement = () => {
+  const {apiFetch} = useApi();
   const [showAddModal, setShowAddModal] = useState(false);
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -20,7 +24,7 @@ const EmployeeManagement = () => {
     search: "",
   });
 
-  const API_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/employees`;
+  const API_URL = `/employees`;
 
   const fetchEmployees = async () => {
     setLoading(true);
@@ -29,7 +33,7 @@ const EmployeeManagement = () => {
       if (filters.department) params.append("department", filters.department);
       if (filters.status) params.append("status", filters.status);
       if (filters.search) params.append("search", filters.search);
-      const response = await fetch(`${API_URL}?${params}`);
+      const response = await apiFetch(`${API_URL}?${params}`);
       const data = await response.json();
       if (data.success) setEmployees(data.data);
       else toast.error(data.message);

@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
+import {useApi} from "../hooks/useApi";
+
+
 const AttendanceSheet = () => {
+  const {apiFetch} = useApi();
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0],
   );
@@ -37,14 +41,7 @@ const AttendanceSheet = () => {
   const loadAttendanceSheet = async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/attendance/sheet?date=${selectedDate}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        },
-      );
+      const response = await apiFetch( `/attendance/sheet?date=${selectedDate}`);
 
       const data = await response.json();
       if (data.success) {
@@ -78,14 +75,7 @@ const AttendanceSheet = () => {
     }
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/attendance/search?query=${encodeURIComponent(query)}&date=${selectedDate}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        },
-      );
+      const response = await apiFetch(`/attendance/search?query=${encodeURIComponent(query)}&date=${selectedDate}`);
 
       const data = await response.json();
       if (data.success) {
@@ -101,14 +91,10 @@ const AttendanceSheet = () => {
 
   const markAttendance = async (employeeId, status) => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/attendance/mark`,
+      const response = await apiFetch(
+        `/attendance/mark`,
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify({
             employee_id: employeeId,
             date: selectedDate,

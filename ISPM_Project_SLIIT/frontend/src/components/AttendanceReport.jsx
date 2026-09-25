@@ -3,7 +3,10 @@ import { toast } from "react-toastify";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
+import {useApi} from "../hooks/useApi";
+
 const AttendanceReport = () => {
+  const {apiFetch} = useApi();
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
   const [reportData, setReportData] = useState([]);
@@ -23,15 +26,10 @@ const AttendanceReport = () => {
   const loadMonthlyReport = async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/attendance/report-all?month=${month}&year=${year}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        },
-      );
-
+      const response = await apiFetch(`/attendance/report-all?month=${month}&year=${year}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch report data");
+      }
       const data = await response.json();
       if (data.success) {
         setReportData(data.data || []);
