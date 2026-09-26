@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const PayrollController = require('../controllers/payroll/PayrollController');
-const { authMiddleware, authorizeRoles } = require('../middlewares/authMiddleware');
+const { authMiddleware, authorizeRoles, requireAdminUser } = require('../middlewares/authMiddleware');
 
 // All routes require authentication
 router.use(authMiddleware, requireAdminUser);

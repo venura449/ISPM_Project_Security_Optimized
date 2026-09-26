@@ -257,9 +257,8 @@ class AuthService {
   static async generateToken(userId, newTokenVersion) {
     const user = await User.findById(userId);
     const userType = user.role;
-    const tokenVersion = user.token_version;
     return jwt.sign(
-      { id: userId, type: userType },
+      { id: userId, type: userType, tokenVersion: newTokenVersion },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRY || '7d' }
     );
