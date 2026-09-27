@@ -194,7 +194,7 @@ class EmployeeAuthService {
                     status: employee.status,
                     salary: employee.salary,
                     address: employee.address,
-                    tokenVersion: employee.token_version,
+                    tokenVersion: newTokenVersion,
                 },
                 token,
                 userType: 'employee'
