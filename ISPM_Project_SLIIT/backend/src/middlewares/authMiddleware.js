@@ -29,7 +29,10 @@ const isEmployeeTokenRevoked = async (decoded) => {
  */
 const authMiddleware = async (req, res, next) => {
   try {
-    const token = req.cookies.token; //get token from cookies
+    let token = req.cookies?.token;
+    if (!token && req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
+      token = req.headers.authorization.substring(7);
+    }
 
     if (!token) {
       return res.status(401).json({

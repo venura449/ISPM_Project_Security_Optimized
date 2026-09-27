@@ -201,7 +201,7 @@ class AuthService {
 
       try {
         const [result] = await conn.query(
-          `UPDATE employees
+          `UPDATE users
           SET token_version = token_version + 1
           WHERE id = ?`,
           [user.id]
@@ -215,7 +215,7 @@ class AuthService {
         }
         const [rows] = await conn.query(
           `SELECT token_version
-          FROM employees
+          FROM users
           WHERE id = ?`,
           [user.id]
         );
@@ -257,9 +257,10 @@ class AuthService {
   static async generateToken(userId, newTokenVersion) {
     const user = await User.findById(userId);
     const userType = user.role;
+    const tokenVersion = newTokenVersion !== undefined ? newTokenVersion : user.token_version;
     return jwt.sign(
-      { id: userId, type: userType, tokenVersion: newTokenVersion },
-      process.env.JWT_SECRET,
+      { id: userId, type: userType, tokenVersion },
+      process.env.JWT_SECRET || 'your_jwt_secret_key_change_in_production',
       { expiresIn: process.env.JWT_EXPIRY || '7d' }
     );
   }
@@ -273,7 +274,7 @@ class AuthService {
     try {
       return jwt.verify(
         token,
-        process.env.JWT_SECRET
+        process.env.JWT_SECRET || 'your_jwt_secret_key_change_in_production'
       );
     } catch (error) {
       console.error('Token verification error:', error.message);
