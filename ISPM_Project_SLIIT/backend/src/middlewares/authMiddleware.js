@@ -143,8 +143,6 @@ const verifyTokenVersion = async(decoded) => {
     return false;
   }
 
-  console.log("tokenVersion: ", decoded.tokenVersion);
-  console.log("token_version:",account.token_version );
   if( !account ){
     return false;
   }

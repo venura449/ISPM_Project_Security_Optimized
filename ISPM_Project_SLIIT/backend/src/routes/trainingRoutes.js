@@ -6,11 +6,11 @@ const router = express.Router();
 router.use(authMiddleware, requireAdminUser);
 
 // Training Programs
-router.post('/programs', TrainingController.createProgram);
-router.get('/programs', TrainingController.getAllPrograms);
-router.get('/programs/:programId', TrainingController.getProgramDetails);
-router.put('/programs/:programId', TrainingController.updateProgram);
-router.delete('/programs/:programId', TrainingController.deleteProgram);
+router.post('/programs', authMiddleware,TrainingController.createProgram);
+router.get('/programs', authMiddleware,TrainingController.getAllPrograms);
+router.get('/programs/:programId',authMiddleware, TrainingController.getProgramDetails);
+router.put('/programs/:programId', authMiddleware, TrainingController.updateProgram);
+router.delete('/programs/:programId', authMiddleware, TrainingController.deleteProgram);
 
 // Training Sessions
 router.post('/sessions', TrainingController.createSession);
