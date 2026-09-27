@@ -5,7 +5,15 @@ const EmployeeDocument = require('../../models/employee/EmployeeDocument');
 class EmployeeController {
   static publicEmployee(employee) {
     if (!employee) return employee;
-    const { password, password_generated_at, temporary_password_expires_at, temporary_password_used_at, must_change_password, ...safe } = employee;
+    const {
+      password,
+      password_generated_at,
+      temporary_password_expires_at,
+      temporary_password_used_at,
+      must_change_password,
+      token_version,
+      ...safe
+    } = employee;
     return safe;
   }
 
@@ -125,6 +133,33 @@ class EmployeeController {
       if (search) filters.search = search;
 
       const result = await EmployeeService.getAllEmployees(filters);
+
+      // Role-based field filtering:
+      // Admins receive the complete employee record (including salary, address, etc.).
+      // Non-admin roles (employees, users) receive only public directory fields.
+      const isAdmin = req.user?.type === 'admin';
+      if (!isAdmin && result && Array.isArray(result.data)) {
+        const PUBLIC_FIELDS = [
+          'id',
+          'employee_id',
+          'name',
+          'email',
+          'phone',
+          'department',
+          'position',
+          'designation',
+          'status',
+          'joining_date',
+          'manager_name'
+        ];
+        result.data = result.data.map(emp => {
+          const filtered = {};
+          PUBLIC_FIELDS.forEach(f => {
+            if (f in emp) filtered[f] = emp[f];
+          });
+          return filtered;
+        });
+      }
 
       return res.status(200).json(EmployeeController.sanitizeResult(result));
     } catch (err) {

@@ -160,7 +160,7 @@ class EmployeeAuthService {
                         message: 'Failed to create login session'
                     };
                 }
-                cont [rows] = await conn.query(
+                const [rows] = await conn.query(
                     `SELECT token_version
                     FROM employees
                     WHERE id = ?`,

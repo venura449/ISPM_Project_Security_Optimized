@@ -73,7 +73,7 @@ class AuthController {
         maxAge: 24 * 60 * 60 * 1000,
       });
 
-      res.status(200).json(responseData);
+      res.status(200).json({ ...responseData, token });
     } catch (error) {
       console.error("Login controller error:", error);
       res.status(500).json({
@@ -228,9 +228,10 @@ class AuthController {
    */
   static async logout(req, res) {
     try {
-      const result = await AuthService.logoutUpdate(req.id);
+      const userId = req.user?.id || req.id;
+      const result = await AuthService.logoutUpdate(userId);
       
-      if(result){
+      if(result && result.success !== false){
         res.clearCookie("token",{
           httpOnly:true,
           secure: process.env.NODE_ENV === "production",

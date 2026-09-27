@@ -3,16 +3,16 @@ const EmployeeController = require('../controllers/employee/EmployeeController')
 const { authMiddleware, requireAdminUser } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
-router.use(authMiddleware, requireAdminUser);
+router.use(authMiddleware);
 
-// Create a new employee
-router.post('/', EmployeeController.createEmployee);
+// Create a new employee (admin only)
+router.post('/', requireAdminUser, EmployeeController.createEmployee);
 
-// Get all employees (with optional filters)
+// Get all employees (authenticated; role-based field filtering applied in controller)
 router.get('/', EmployeeController.getAllEmployees);
 
-// Get next available employee ID
-router.get('/next-id', EmployeeController.getNextEmployeeId);
+// Get next available employee ID (admin only)
+router.get('/next-id', requireAdminUser, EmployeeController.getNextEmployeeId);
 
 // Get employees by status
 router.get('/status/:status', EmployeeController.getByStatus);
@@ -23,22 +23,22 @@ router.get('/department/:department', EmployeeController.getByDepartment);
 // Get employee by ID with full profile
 router.get('/:id', EmployeeController.getEmployeeById);
 
-// Update employee information
-router.put('/:id', EmployeeController.updateEmployee);
+// Update employee information (admin only)
+router.put('/:id', requireAdminUser, EmployeeController.updateEmployee);
 
-// Update employee status (Probation -> Permanent -> Resigned)
-router.patch('/:id/status', EmployeeController.updateEmployeeStatus);
+// Update employee status (admin only)
+router.patch('/:id/status', requireAdminUser, EmployeeController.updateEmployeeStatus);
 
-// Upload employee document
-router.post('/:id/documents', EmployeeController.uploadDocument);
+// Upload employee document (admin only)
+router.post('/:id/documents', requireAdminUser, EmployeeController.uploadDocument);
 
-// Get employee documents
-router.get('/:id/documents', EmployeeController.getDocuments);
+// Get employee documents (admin only)
+router.get('/:id/documents', requireAdminUser, EmployeeController.getDocuments);
 
-// Delete employee document
-router.delete('/:employeeId/documents/:docId', EmployeeController.deleteDocument);
+// Delete employee document (admin only)
+router.delete('/:employeeId/documents/:docId', requireAdminUser, EmployeeController.deleteDocument);
 
-// Delete employee
-router.delete('/:id', EmployeeController.deleteEmployee);
+// Delete employee (admin only)
+router.delete('/:id', requireAdminUser, EmployeeController.deleteEmployee);
 
 module.exports = router;
