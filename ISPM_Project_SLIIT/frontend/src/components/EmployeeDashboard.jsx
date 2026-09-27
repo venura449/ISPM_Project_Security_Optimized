@@ -421,21 +421,12 @@ const EmployeeDashboard = () => {
 
   const handleLogout = async () => {
     try{
-      const response = await apiFetch(
-        `/employee-auth/logout`,
-        {
-          method : "POST"
-        },
-      );
-
-      if(response){
         await logout();
         toast.success("Logged out successfully!", {
         position: "top-right",
         autoClose: 2000,
       });
       navigate("/employee-login");
-      }
     }catch(error) {
       toast.error("Error: " + error.message, {
         position: "top-right",

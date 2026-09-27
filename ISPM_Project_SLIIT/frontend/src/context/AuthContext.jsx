@@ -116,6 +116,9 @@ export const AuthProvider = ({ children }) => {
 
     setUser(null);
     setError(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("userType");
+    localStorage.removeItem("user");
     toast.info("Logged out", { position: "top-right", autoClose: 1500 });
   }, [apiFetch]);
 

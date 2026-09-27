@@ -697,13 +697,8 @@ export const Dashboard = () => {
   const [collapsed, setCollapsed] = useState(false);
 
   const handleLogout = async () => {
-    await apiFetch(
-        `/auth/logout`,
-        {
-          method : "POST"
-        },
-      );
-    logout();
+    await logout();
+    window.location.href = "/login";
     toast.info("Logged out successfully", {
       position: "top-right",
       autoClose: 1500,

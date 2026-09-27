@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "init-db": "node scripts/initDb.js"
+    "init-db": "node scripts/initDb.js",
+    "migrate-token-version": "node scripts/migrate-token-version.js"
   },
   "keywords": [],
   "author": "",
